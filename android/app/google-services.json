@@ -1,0 +1,130 @@
+{
+  "project_info": {
+    "project_number": "978500802251",
+    "firebase_url": "https://venda-favorita.firebaseio.com",
+    "project_id": "venda-favorita",
+    "storage_bucket": "venda-favorita.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978500802251:android:9c108fc852b9d56a69ed4e",
+        "android_client_info": {
+          "package_name": "com.appfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "978500802251-msm80cshriqdvih6im3sr5g8kif6keod.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.appfirebase",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "978500802251-fho2o9t3kdnpd9kmb8l00bl9bqicliap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcXzcZdOKOVQpUdS0J1vG_2Y8d9QT4RNY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "978500802251-fho2o9t3kdnpd9kmb8l00bl9bqicliap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978500802251:android:c1a928bced050c9669ed4e",
+        "android_client_info": {
+          "package_name": "com.fav"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "978500802251-bpds2l9duonpo02bcjtiqlt637kl68v4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fav",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "978500802251-fho2o9t3kdnpd9kmb8l00bl9bqicliap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcXzcZdOKOVQpUdS0J1vG_2Y8d9QT4RNY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "978500802251-fho2o9t3kdnpd9kmb8l00bl9bqicliap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978500802251:android:740ada2d5968049669ed4e",
+        "android_client_info": {
+          "package_name": "com.rapha.vendafavorita"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "978500802251-2s626pftrsq0i5su4c0662bliu37a0k0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rapha.vendafavorita",
+            "certificate_hash": "e06edadb8795f2b13d8e3c967fd4014301bcf70f"
+          }
+        },
+        {
+          "client_id": "978500802251-bkk85j6nrchkd5h4v2963hdqsmd0lf84.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rapha.vendafavorita",
+            "certificate_hash": "3a3306d3c3f8cf50f209d6948d88b68fc917e3b8"
+          }
+        },
+        {
+          "client_id": "978500802251-fho2o9t3kdnpd9kmb8l00bl9bqicliap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcXzcZdOKOVQpUdS0J1vG_2Y8d9QT4RNY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "978500802251-fho2o9t3kdnpd9kmb8l00bl9bqicliap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
