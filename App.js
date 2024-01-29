@@ -17,7 +17,7 @@ import { Avatar } from 'react-native-paper';
 
 import RankingDetalhe from './src/views/RankingDetalhe';
 import Menu from './src/views/Menu';
-import { colorPrimary, colorPrimaryDark } from './src/constantes/cores';
+import { colorPrimary, colorPrimaryDark, colorSecondaryLight } from './src/constantes/cores';
 import Analise from './src/views/Analise';
 import Vendas from './src/views/Vendas';
 import SearchVendedor from './src/views/SearchVendedor';
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: colorPrimary,
+    backgroundColor: colorSecondaryLight,
     borderRadius: 12,
     paddingVertical: 5
   },
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
 
 function IconeMenu(props) {
   return (
-    <Card elevation={8} style={styles.cardItem}>
+    <Card elevation={2} style={styles.cardItem}>
       <TouchableOpacity style={styles.item} onPress={() => props.nav.navigate(props.screen)}>
         <Icon style={styles.itemIcon} color={colorPrimary} size={45} name={props.icone} />
         <Text style={styles.itemText}>{props.name}</Text>
@@ -164,7 +165,7 @@ let App = () => {
     <NavigationContainer>
       <StatusBar backgroundColor={colorPrimaryDark} barStyle="light-content" />
 
-      <Stack.Navigator screenOptions={{ headerStyle: { elevation: 16, shadowColor: 'black' } }}>
+      <Stack.Navigator screenOptions={{ headerStyle: { elevation: 12, shadowColor: 'black' } }}>
 
         <Stack.Screen
           name="Home"

@@ -4,6 +4,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Card, Colors, Divider, List } from 'react-native-paper';
 import { formartarValor, formartarValorSmall } from '../../util/Formatar';
 import { getListaPrecificacao } from '../../util/Calculos';
+import { colorCinza, colorSecondaryLight } from '../../constantes/cores';
 
 const styles = StyleSheet.create({
     img: {
@@ -20,6 +21,8 @@ const styles = StyleSheet.create({
         flex: 1
     },
     card: {
+        backgroundColor: colorSecondaryLight,
+        borderRadius: 0
     },
     footer: {
         height: 100
@@ -33,7 +36,8 @@ const styles = StyleSheet.create({
     labelName: {
         fontSize: 16,
         lineHeight: 20,
-        height: 40
+        height: 40,
+        color: colorCinza
     },
     labelHora: {
         fontSize: 10,
@@ -63,8 +67,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4
     },
     itemValor: {
-        margin: 0,
-        padding: 0,
+        
     },
     txtItemValor: {
         margin: 0,
@@ -80,7 +83,10 @@ const styles = StyleSheet.create({
         lineHeight: 14,
         fontSize: 12,
         color: 'gray',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginLeft: 8,
+        marginTop: 4,
+        paddingBottom: 5
     },
     containerValores: {
         flexDirection: 'row',
@@ -123,11 +129,8 @@ function ItemValor({ valor, comissao, title }) {
     return (
         <View style={styles.containerItemValor}>
             <Text style={styles.titleValor}>{title}</Text>
-            <List.Item
-                style={styles.itemValor}
-                descriptionStyle={styles.txtItemValor}
-                titleStyle={styles.titleItemValor}
-                title={formartarValorSmall(valor)} />
+            <Text style={styles.titleItemValor}>{formartarValorSmall(valor)}</Text>
+            
         </View>
     );
 };
@@ -151,14 +154,14 @@ export default function ItemProdutoCentral({ path, nome, id, navigation, editor,
     const { imgCapa, prodName, comissao, categorias, timeUpdate, prodValor, idProduto, imagens } = produto;
 
     return (
-        <TouchableOpacity style={styles.mainContainer} activeOpacity={0.7} onPress={() => click(produto)}>
+        <TouchableWithoutFeedback style={styles.mainContainer} activeOpacity={0.7} onPress={() => click(produto)}>
             <Divider />
             <Card style={styles.card}>
                 <View style={styles.containerItem}>
                     <Image style={styles.img} source={{ uri: imgCapa }} />
                     <View style={styles.btItem}>
                         {timeUpdate ? <Text numberOfLines={6} style={styles.labelHora}>{getHora(timeUpdate)}</Text> : null}
-                        <Text numberOfLines={2} style={styles.labelName}>{prodName}</Text>
+                        <Text numberOfLines={2} style={styles.labelName}>{String(prodName).toUpperCase()}</Text>
                         <ContainerValores produto={produto} />
                     </View>
 
@@ -169,6 +172,6 @@ export default function ItemProdutoCentral({ path, nome, id, navigation, editor,
             </Card>
             
             <Divider />
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
     );
 }

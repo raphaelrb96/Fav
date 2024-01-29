@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Card } from 'react-native-paper';
+import { colorCinza, colorSecondaryDark } from '../../constantes/cores';
 
 const styles = StyleSheet.create({
     
@@ -21,6 +22,7 @@ const styles = StyleSheet.create({
     },
     labelBtItem: {
         fontSize: 12,
+        color: colorCinza,
         padding: 0,
         margin: 0,
     },
@@ -47,7 +49,7 @@ export default function ItemProduto({path, nome, id, navigation, editor, produto
                 <View>
                     <Card.Cover style={{height: 120, borderRadius: 6}} source={{ uri: path }} />
                     <View style={styles.btItem}>
-                        <Text numberOfLines={2} style={styles.labelBtItem}>{nome}</Text>
+                        <Text numberOfLines={2} style={styles.labelBtItem}>{String(nome).toUpperCase()}</Text>
                     </View>
 
                 </View>

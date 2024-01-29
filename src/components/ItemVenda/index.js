@@ -15,8 +15,13 @@ const theme = {
 
 const styles = StyleSheet.create({
     subheader: {
-        marginLeft: -8,
-        marginRight: 20
+    },
+    itemContainer: {
+        flex: 1,
+        margin: 0,
+        padding: 0,
+        paddingLeft: 16,
+        paddingRight: 10
     },
     itemDescricao: {
         flex: 1
@@ -31,7 +36,7 @@ const styles = StyleSheet.create({
     iconeContainer: {
         height: '100%',
         padding: 0,
-        margin: 0
+        margin: 0,
     },
     icone: {
         alignItems: 'center',
@@ -327,6 +332,7 @@ export default function ItemVenda({ item, click }) {
                     title={`${data} as ${new Date(item.hora).toLocaleTimeString()} \n${String(item.userNomeRevendedor).toLocaleUpperCase()}`}
                     titleNumberOfLines={3}
                     titleStyle={{ fontWeight: 'bold' }}
+                    style={styles.itemContainer}
                     expanded={false}
                     descriptionStyle={styles.itemDescricao}
                     descriptionNumberOfLines={17}

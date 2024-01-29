@@ -12,10 +12,7 @@ import ItemProdutoCentral from '../../components/ItemProdutoCentral';
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
-        flex: 1,
         backgroundColor: 'transparent',
-        height: '100%',
-        width: '100%',
     },
     contentContainer: {
         flex: 1,

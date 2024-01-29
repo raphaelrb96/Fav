@@ -1,8 +1,8 @@
 import Pb from "../Pb";
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
-import { List, Card, Portal, Provider, DefaultTheme, Button, Headline, Divider } from 'react-native-paper';
-import { colorCinza, colorPrimary, colorPrimaryDark } from '../../constantes/cores';
+import { List, Card, Portal, Provider, DefaultTheme, Button, Headline, Divider, Icon } from 'react-native-paper';
+import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryDark, colorSecondaryLight } from '../../constantes/cores';
 import ItemProdutoVenda from "../ItemProdutoVenda";
 import firestore from '@react-native-firebase/firestore';
 
@@ -29,14 +29,19 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     buttons: {
+        display: 'flex',
+        flex: 1,
         alignContent: 'center',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        textAlign: 'center'
     },
     dados: {
-        marginLeft: 0,
+        marginLeft: -8,
         paddingEnd: 32,
-        padding: 0
+        paddingLeft: 0,
+        paddingBottom: 0,
+        paddingTop: 4
     },
     spacing: {
         height: 16
@@ -51,10 +56,13 @@ const styles = StyleSheet.create({
         marginTop: 14
     },
     bt: {
-        fontSize: 25
+        fontSize: 14,
+        padding: 0,
+        margin: 0
     },
     botao: {
-        margin: 6
+        marginHorizontal: 6,
+        flex: 1
     },
     subheader: {
         marginLeft: 8,
@@ -62,6 +70,15 @@ const styles = StyleSheet.create({
         marginTop: 0,
         marginBottom: 8
     },
+    btnMensagem: {
+        left: 0,
+        right: 0,
+        flex: 1,
+        marginTop: 16
+    },
+    spacingBottomEnd: {
+        height: 120
+    }
 });
 
 const theme = {
@@ -139,6 +156,16 @@ function getFormaPagamento(n) {
             return 'Cartão';
     }
 };
+
+function renderIcon(source) {
+    return (
+        <Icon
+            source={source}
+            size={22}
+            color={colorCinza}
+        />
+    )
+}
 
 async function updateVenda(state, item, callback) {
 
@@ -255,21 +282,34 @@ export default function Detalhes({ item, close, show, cancel }) {
             <View style={styles.spacing} />
             <Divider style={styles.divider} />
             <View style={styles.spacing} />
-
-            <Card.Actions style={styles.buttons}>
-                <Button mode="contained" onPress={() => atualizar(2)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon="alert-circle-check" />
-                <Button mode="contained" onPress={() => atualizar(4)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon="rocket-launch" />
-                <Button mode="contained" onPress={() => cancel(3)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon="close-box" />
-                <Button mode="contained" onPress={() => atualizar(5)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon="shield-check" />
-
-            </Card.Actions>
-
-            <Card.Actions style={styles.buttons}>
-                <Button onPress={() => show()} theme={theme} mode="outlined" ><Text>Abrir Whatsapp</Text></Button>
-
-            </Card.Actions>
-
             <View style={styles.spacing} />
+
+            <Card.Actions style={styles.buttons}>
+                <Button mode="outlined" uppercase onPress={() => atualizar(2)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("alert-circle-check")}>
+                    Confirmar
+                </Button>
+                <Button mode="outlined" uppercase onPress={() => atualizar(4)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("rocket-launch")}>
+                    Liberar
+                </Button>
+
+            </Card.Actions>
+
+            <Card.Actions style={styles.buttons}>
+                <Button mode="outlined" uppercase onPress={() => cancel(3)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("close-box")}>
+                    Cancelar
+                </Button>
+                <Button mode="outlined" uppercase onPress={() => atualizar(5)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("shield-check")}>
+                    concluir
+                </Button>
+
+            </Card.Actions>
+
+            <Card.Actions style={styles.buttons}>
+                <Button uppercase onPress={() => show()} theme={theme} style={styles.btnMensagem} mode="contained" ><Text>Abrir Whatsapp</Text></Button>
+
+            </Card.Actions>
+
+            <View style={styles.spacingBottomEnd} />
         </View>
     );
 }

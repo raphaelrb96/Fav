@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import { View, StatusBar, StyleSheet, ScrollView, Text, Image, Alert } from 'react-native';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Card, Title, List, Avatar, TextInput, DefaultTheme, Checkbox, Chip, Button } from 'react-native-paper';
-//import { launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { useState } from 'react';
 
 import {
@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         marginBottom: 12,
-        marginTop: 12
+        marginTop: 12,
+        backgroundColor: colorSecondaryLight
     }, img: {
         width: 150,
         height: 150,
@@ -177,20 +178,24 @@ function InputImagens({ fotos, setFotos }) {
 
 
     const listener = (response) => {
+        console.log(JSON.stringify(response))
 
         if (response?.assets != null) {
-            let newDados = fotos;
+            let newDados = fotos ? fotos : [];
             response.assets.forEach(asset => {
-                newDados.push(asset);
+                newDados.unshift(asset);
             });
             //setFotos([...newDados]);
+
             let listaDeFotos = [...newDados];
 
             if (listaDeFotos !== null && listaDeFotos > 0) {
 
-                setFotos(listaDeFotos);
+                
 
             }
+
+            return newDados;
 
 
         }
@@ -208,7 +213,8 @@ function InputImagens({ fotos, setFotos }) {
         );
     }
 
-    function ItemFoto({ path, remove }) {
+    function ItemFoto({ path, remove, uriLocal }) {
+        if(uriLocal) console.log('Novo arquivo local render')
         //console.log(path);
         return (
             <Card onLongPress={remove} elevation={8} style={styles.cardItem}>
@@ -220,6 +226,14 @@ function InputImagens({ fotos, setFotos }) {
         );
     }
 
+    const addImg = async () => { 
+        const response = await launchImageLibrary(option);
+        const imgsList = listener(response);
+        setFotos(imgsList);
+    };
+
+    console.log(JSON.stringify('render lista fotos'))
+
     return (
         <View>
 
@@ -228,9 +242,10 @@ function InputImagens({ fotos, setFotos }) {
                 <FlatList
                     showsHorizontalScrollIndicator={false}
                     horizontal={true}
-                    ListHeaderComponent={(item) => <ItemHeader click={() => { launchImageLibrary(option, listener) }} />}
+                    ListHeaderComponent={(item) => <ItemHeader click={addImg} />}
                     renderItem={({ item, index }) => (
                         <ItemFoto
+                            uriLocal={item.uri}
                             path={(item.uri == null) ? item : item.uri}
                             remove={() => {
                                 console.log('remove: ' + index);
@@ -690,20 +705,17 @@ export default function ProdutoDetalheEditor({ state, setState }) {
 
     const { imgCapa, imagens } = state.produto;
 
-    const setFotos = (listaDeFotos) => {
-        setState((prevState) => ({
-            ...prevState,
-            imagens: listaDeFotos,
-            imgCapa: listaDeFotos[0].uri
-        }));
-    };
+
+
+    
+
 
     return (
         <ScrollView showsHorizontalScrollIndicator={false}>
             <InputImagens
                 fotos={imagens}
                 capa={imgCapa}
-                setFotos={setFotos}
+                setFotos={setState}
             />
         </ScrollView>
     );

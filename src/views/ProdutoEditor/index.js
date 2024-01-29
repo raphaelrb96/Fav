@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
 function Content({ state, setState }) {
 
     const { produto, load } = state;
+    
 
     if (load) return <Pb />;
 
@@ -64,7 +65,7 @@ export default function ProdutoEditor({ navigation, route }) {
     const snapPoints = useMemo(() => ['80%'], []);
     const [index, setIndex] = useState(-1);
     const [state, setState] = useState({
-        produto: route.params,
+        produto: route.params.produto,
         load: false
     });
 
@@ -78,13 +79,22 @@ export default function ProdutoEditor({ navigation, route }) {
         setIndex(index);
     }, []);
 
+    function setFotos (listaDeFotos){
+        console.log('set fotos', listaDeFotos);
+        setState((prevState) => ({
+            ...prevState,
+            imagens: listaDeFotos,
+            imgCapa: listaDeFotos[0].uri
+        }));
+    };
+
 
     return (
         <BottomSheetModalProvider>
             <GestureHandlerRootView style={styles.container}>
 
                 <Content
-                    setState={setState}
+                    setState={setFotos}
                     state={state} />
 
                 <BottomSheetProdutoEditor

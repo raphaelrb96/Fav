@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { View, Text, StyleSheet, FlatList, LogBox, Linking, YellowBox } from 'react-native';
 import { List, FAB, Portal, Provider as PaperProvider, DefaultTheme, Dialog, TextInput, Button } from 'react-native-paper';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { firebase } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { colorCinza, colorPrimary } from '../../constantes/cores';
+import { colorCinza, colorPrimary, colorSecondary, colorSecondaryLight } from '../../constantes/cores';
 import Pb from '../../components/Pb';
 import HeaderVendas from '../../components/HeaderVendas/index.js';
 import Detalhes from '../../components/DetalhesVenda';
@@ -13,20 +13,21 @@ import ItemVenda from '../../components/ItemVenda';
 const theme = {
     ...DefaultTheme,
     colors: {
-        primary: colorPrimary,
+        primary: colorSecondaryLight,
         accent: colorCinza,
+        background: colorSecondary
     }
 }
 
 const styles = StyleSheet.create({
     fab: {
-        backgroundColor: colorPrimary
+        backgroundColor: colorSecondaryLight
     },
     container: {
         flex: 1,
     },
     bottomSheet: {
-        elevation: 8
+        elevation: 16,
     },
     footer: {
         height: 20
@@ -282,6 +283,8 @@ async function getRevendas(filtro, listener) {
 export default function NovaVendas({ navigation }) {
 
     LogBox.ignoreAllLogs();
+
+
     const [pb, setPb] = useState(true);
     const [resumo, setResumo] = useState(null);
     const [status, setStatus] = useState(0);
@@ -522,25 +525,34 @@ export default function NovaVendas({ navigation }) {
                     fabStyle={styles.fab}
                     open={open}
                     icon={'filter'}
+                    backdropColor='#00000070'
                     actions={[
                         {
                             icon: 'calendar-month',
                             label: '1 mês',
+                            containerStyle: styles.fab,
+                            style: styles.fab,
                             onPress: () => changeFiltro(4),
                         },
                         {
                             icon: 'calendar-week',
                             label: '1 semana',
+                            containerStyle: styles.fab,
+                            style: styles.fab,
                             onPress: () => changeFiltro(3),
                         },
                         {
                             icon: 'calendar-today',
                             label: '48 horas',
+                            containerStyle: styles.fab,
+                            style: styles.fab,
                             onPress: () => changeFiltro(2),
                         },
                         {
                             icon: 'calendar-clock',
                             label: 'Hoje',
+                            containerStyle: styles.fab,
+                            style: styles.fab,
                             onPress: () => changeFiltro(1),
                         },
                     ]}

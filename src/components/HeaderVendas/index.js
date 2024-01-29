@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, LogBox } from 'react-native';
 import { Card } from 'react-native-paper';
 import ItemProduto from '../ItemProduto';
+import { colorSecondaryLight } from '../../constantes/cores';
 
 const styles = StyleSheet.create({
     container: {
@@ -12,7 +13,8 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         marginRight: 6,
         marginTop: 6,
-        marginBottom: 6
+        marginBottom: 6,
+        backgroundColor: colorSecondaryLight
     },
     row: {
         flexDirection: 'row',
