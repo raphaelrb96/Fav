@@ -1,12 +1,14 @@
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, FlatList } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, FlatList, LogBox } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import firestore from '@react-native-firebase/firestore';
 import Pb from '../../components/Pb';
 import ItemProdutoCentral from '../../components/ItemProdutoCentral';
+import { Searchbar } from 'react-native-paper';
+import { colorSecondaryLight } from '../../constantes/cores';
 
 
 const styles = StyleSheet.create({
@@ -25,20 +27,19 @@ const styles = StyleSheet.create({
     },
     spacing: {
         marginTop: 6
+    },
+    toolbar: {
+        borderRadius: 0,
+        backgroundColor: colorSecondaryLight
     }
 });
 
-const listarProdutos = async (listener) => {
+const listarProdutos = (listener) => {
 
 
-    let ref = firestore()
-        .collection('produtos')
-        .orderBy("timeUpdate", "desc")
-        .limit(200);
+    const ref = firestore().collection('produtos').orderBy("timeUpdate", "desc").limit(200);
 
-
-
-    const unsubscribe = await ref.onSnapshot(snap => {
+    const onNext = snap => {
 
         if (!snap) {
             listener(null);
@@ -59,12 +60,51 @@ const listarProdutos = async (listener) => {
 
         listener(lista);
 
-    }).catch(error => {
+    };
+
+    const onError = error => {
         listener(null);
-    });
+    };
+
+    const unsubscribe = ref.onSnapshot(onNext, onError);
 
     return unsubscribe;
 
+};
+
+const pesquisarProduto = (text, listener) => {
+    const ref = firestore().collection('produtos').where(`tag.${text}`, '==', true).limit(200);
+
+    const onNext = snap => {
+
+        if (!snap) {
+            listener(null);
+            return;
+
+        }
+
+        let lista = [];
+
+        if (snap != null && snap.size > 0) {
+
+            snap.forEach(doc => {
+                let objItem = doc.data();
+                lista.push(objItem);
+            });
+
+        }
+
+        listener(lista);
+
+    };
+
+    const onError = error => {
+        listener(null);
+    };
+
+    const unsubscribe = ref.onSnapshot(onNext, onError);
+
+    return unsubscribe;
 };
 
 function Content({ state, click }) {
@@ -85,6 +125,7 @@ function Content({ state, click }) {
 }
 
 function BottomSheetProdutos({ refs, index, points, callback }) {
+    
 
     return (
         <BottomSheet
@@ -95,7 +136,7 @@ function BottomSheetProdutos({ refs, index, points, callback }) {
             snapPoints={points}
             onChange={callback}>
             <View style={styles.contentContainer}>
-                <Text>Awesome 🎉</Text>
+                
             </View>
         </BottomSheet>
     );
@@ -103,29 +144,89 @@ function BottomSheetProdutos({ refs, index, points, callback }) {
 
 export default function ProdutosCentral({ navigation }) {
 
+    //LogBox.ignoreAllLogs();
+
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={handlePresentModalPress}>
-                    <Icon style={{ marginRight: 16 }} color={'#FFF'} size={24} name="plus" />
+                    <Icon style={{ marginRight: 16 }} color={'#000'} size={24} name="magnify" />
                 </TouchableOpacity>
             )
         });
     }, []);
 
+
+
     const bottomSheetModalRef = useRef();
     const [index, setIndex] = useState(-1);
     const [state, setState] = useState({
         list: null,
-        load: true
+        load: true,
+        searchMode: false,
+        searchText: ''
     });
 
+    const { searchText, searchMode } = state;
 
+    useLayoutEffect(() => {
+        if (!searchMode) return;
+
+        const blur = () => {
+
+            setState((prevState) => ({
+                ...prevState,
+                load: true,
+                list: [],
+            }));
+
+            const fetchData = () => {
+                const listener = pesquisarProduto(String(searchText).toLowerCase(), list => {
+    
+                    setState((prevState) => ({
+                        ...prevState,
+                        list: list,
+                        load: false
+                    }));
+                });
+    
+                return listener;
+            };
+    
+            return fetchData();
+
+        };
+
+        navigation.setOptions({
+            header: () => (
+                <Searchbar
+                    style={styles.toolbar}
+                    onIconPress={() => navigation.goBack()}
+                    icon="arrow-left"
+                    mode='bar'
+                    autoFocus
+                    elevation={5}
+                    placeholder="Pesquisar por palavre chave"
+                    onChangeText={text => setState((prevState) => ({
+                        ...prevState,
+                        searchText: text
+                    }))}
+                    defaultValue={searchText}
+                    onBlur={blur}
+                />
+            )
+        });
+
+    }, [navigation, state]);
 
     const snapPoints = useMemo(() => ['80%'], []);
 
     const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
+        setState((prevState) => ({
+            ...prevState,
+            searchMode: true
+        }));
     }, []);
 
     const handleSheetChanges = useCallback((index) => {
@@ -137,16 +238,24 @@ export default function ProdutosCentral({ navigation }) {
         navigation.navigate('Editor de Produto', { produto: item });
     };
 
-    useEffect(async () => {
+    useEffect(() => {
 
-        const listener = await listarProdutos(list => {
-            setState({
-                list: list,
-                load: false
-            })
-        });
+        const fetchData = () => {
+            const listener = listarProdutos(list => {
 
-        return listener;
+                setState((prevState) => ({
+                    ...prevState,
+                    list: list,
+                    load: false
+                }));
+            });
+
+            return listener;
+        };
+
+        return fetchData();
+
+
     }, []);
 
     return (
