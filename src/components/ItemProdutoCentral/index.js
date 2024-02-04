@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Card, Colors, Divider, List } from 'react-native-paper';
+import { Button, Card, Colors, Divider, List, Switch } from 'react-native-paper';
 import { formartarValor, formartarValorSmall } from '../../util/Formatar';
 import { getListaPrecificacao } from '../../util/Calculos';
-import { colorCinza, colorSecondaryLight } from '../../constantes/cores';
+import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
 
 const styles = StyleSheet.create({
     img: {
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: colorSecondaryLight,
-        borderRadius: 0
+        borderRadius: 0,
     },
     footer: {
         height: 100
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         alignContent: 'center',
-        borderColor:'gray',
+        borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 8,
         marginVertical: 6,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4
     },
     itemValor: {
-        
+
     },
     txtItemValor: {
         margin: 0,
@@ -104,8 +104,25 @@ const styles = StyleSheet.create({
         marginRight: 8,
         paddingVertical: 4
     },
-    mainContainer:{
+    mainContainer: {
         marginBottom: 6,
+    },
+    switch: {
+        flex: 1,
+        margin: 0,
+        padding: 0,
+        marginTop: -6,
+        marginBottom: 4
+    },
+    row: {
+        flexDirection: 'row'
+    },
+    btn: {
+        marginTop: 6,
+        marginBottom: 16,
+        marginHorizontal: 32,
+        borderColor: colorPrimaryDark,
+        color: colorPrimaryDark
     }
 });
 
@@ -130,7 +147,7 @@ function ItemValor({ valor, comissao, title }) {
         <View style={styles.containerItemValor}>
             <Text style={styles.titleValor}>{title}</Text>
             <Text style={styles.titleItemValor}>{formartarValorSmall(valor)}</Text>
-            
+
         </View>
     );
 };
@@ -149,18 +166,38 @@ function ContainerValores({ produto }) {
     );
 };
 
-export default function ItemProdutoCentral({ path, nome, id, navigation, editor, produto, noClick, click }) {
+export default function ItemProdutoCentral({ path, nome, id, navigation, editor, produto, noClick, click, switc }) {
 
-    const { imgCapa, prodName, comissao, categorias, timeUpdate, prodValor, idProduto, imagens } = produto;
+    const { imgCapa, prodName, comissao, categorias, timeUpdate, prodValor, disponivel, idProduto, imagens } = produto;
+
+    const [disp, setDisp] = useState(disponivel);
+
+    const onSwith = () => {
+        setDisp(disp ? false : true);
+        switc(produto);
+    };
 
     return (
-        <TouchableWithoutFeedback style={styles.mainContainer} activeOpacity={0.7} onPress={() => click(produto)}>
+        <View style={styles.mainContainer}>
             <Divider />
             <Card style={styles.card}>
                 <View style={styles.containerItem}>
-                    <Image style={styles.img} source={{ uri: imgCapa }} />
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => click(produto)}>
+                        <Image style={styles.img} source={{ uri: imgCapa }} />
+                    </TouchableOpacity>
+
                     <View style={styles.btItem}>
-                        {timeUpdate ? <Text numberOfLines={6} style={styles.labelHora}>{getHora(timeUpdate)}</Text> : null}
+                        {
+                            timeUpdate ?
+                                <View style={styles.row}>
+                                    <Text numberOfLines={6} style={styles.labelHora}>
+                                        {getHora(timeUpdate)}
+                                    </Text>
+                                    <Switch color={disp ? colorPrimary : colorCinza} value={disp} style={styles.switch} onValueChange={onSwith} />
+                                </View>
+                                :
+                                null
+                        }
                         <Text numberOfLines={2} style={styles.labelName}>{String(prodName).toUpperCase()}</Text>
                         <ContainerValores produto={produto} />
                     </View>
@@ -170,8 +207,8 @@ export default function ItemProdutoCentral({ path, nome, id, navigation, editor,
 
 
             </Card>
-            
+
             <Divider />
-        </TouchableWithoutFeedback>
+        </View>
     );
 }

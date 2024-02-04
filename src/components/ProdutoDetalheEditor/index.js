@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     checkbox: {
-        width: 280,
+        width: '100%',
     },
     checkboxContainer: {
         marginTop: 20,
@@ -228,12 +228,16 @@ function InputImagens({ fotos, setState }) {
     };
 
     function setFotos(listaDeFotos) {
+
+
+        const imagemCapa = listaDeFotos[0].uri ? listaDeFotos[0].uri : listaDeFotos[0];
+
         setState((prevState) => ({
             ...prevState,
             produto: {
                 ...prevState.produto,
                 imagens: listaDeFotos,
-                imgCapa: listaDeFotos[0].uri
+                imgCapa: imagemCapa
             }
 
         }));
@@ -685,6 +689,7 @@ function ContainerButton({ click, state }) {
                 <Button
                     mode='contained'
                     loading={loadSave}
+                    disabled={loadSave}
                     uppercase
                     onPress={click}
                     icon={() => <IconeBtn />}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -32,6 +32,7 @@ import Feeds from './src/views/Feeds';
 import Comissoes from './src/views/Comissoes';
 import UsuariosCentral from './src/views/UsuariosCentral';
 import ProdutoEditor from './src/views/ProdutoEditor';
+import { firebase } from '@react-native-firebase/auth';
 
 const Stack = createStackNavigator();
 
@@ -127,7 +128,28 @@ function IconeMenu(props) {
   );
 }
 
+function MiniMenu({ navigation }) {
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.container} >
+
+        <Avatar.Image style={styles.logo} size={110} source={require('./src/img/logo.png')} />
+
+
+        <View style={styles.row}>
+          <IconeMenu nav={navigation} name="Central de Produtos" screen="Produtos" icone="shopping" />
+          <IconeMenu nav={navigation} name="Gerenciador de Telas" screen="Telas e Feeds" icone="gesture-tap-box" />
+        </View>
+        <View style={styles.spacing} />
+      </View>
+    </ScrollView>
+
+  )
+};
+
 function MenuMain({ navigation }) {
+
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container} >
@@ -155,9 +177,25 @@ function MenuMain({ navigation }) {
     </ScrollView>
 
   )
-}
+};
+
+
 
 let App = () => {
+
+
+  useEffect(() => {
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // Signed in
+      } else {
+        firebase.auth().signInAnonymously();
+      }
+    });
+
+
+  }, []);
 
 
   return (
@@ -169,6 +207,7 @@ let App = () => {
 
         <Stack.Screen
           name="Home"
+          //component={MiniMenu}
           component={MenuMain}
           options={{
             headerShown: false

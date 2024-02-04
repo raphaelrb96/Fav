@@ -7,8 +7,8 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import firestore from '@react-native-firebase/firestore';
 import Pb from '../../components/Pb';
 import ItemProdutoCentral from '../../components/ItemProdutoCentral';
-import { Searchbar } from 'react-native-paper';
-import { colorSecondaryLight } from '../../constantes/cores';
+import { FAB, PaperProvider, Searchbar } from 'react-native-paper';
+import { colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
 
 
 const styles = StyleSheet.create({
@@ -31,13 +31,21 @@ const styles = StyleSheet.create({
     toolbar: {
         borderRadius: 0,
         backgroundColor: colorSecondaryLight
-    }
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+        backgroundColor: colorPrimaryDark,
+        color: '#fff'
+    },
 });
 
 const listarProdutos = (listener) => {
 
 
-    const ref = firestore().collection('produtos').orderBy("timeUpdate", "desc").limit(200);
+    const ref = firestore().collection('produtos').orderBy("timeUpdate", "desc").limit(50);
 
     const onNext = snap => {
 
@@ -107,6 +115,12 @@ const pesquisarProduto = (text, listener) => {
     return unsubscribe;
 };
 
+const switchDisponibilidade = (produto) => {
+    const disp = !produto.disponivel;
+    const referencedb = firestore().collection('produtos').doc(produto.idProduto);
+    referencedb.update({disponivel: disp});
+};
+
 function Content({ state, click }) {
 
     const { list, load } = state;
@@ -116,7 +130,7 @@ function Content({ state, click }) {
     return (
         <View style={styles.content}>
             <FlatList
-                renderItem={({ item }) => <ItemProdutoCentral click={click} produto={item} />}
+                renderItem={({ item }) => <ItemProdutoCentral click={click} produto={item} switc={switchDisponibilidade} />}
                 ListHeaderComponent={() => <View style={styles.spacing} />}
                 data={list} />
         </View>
@@ -125,7 +139,7 @@ function Content({ state, click }) {
 }
 
 function BottomSheetProdutos({ refs, index, points, callback }) {
-    
+
 
     return (
         <BottomSheet
@@ -136,7 +150,7 @@ function BottomSheetProdutos({ refs, index, points, callback }) {
             snapPoints={points}
             onChange={callback}>
             <View style={styles.contentContainer}>
-                
+
             </View>
         </BottomSheet>
     );
@@ -183,17 +197,17 @@ export default function ProdutosCentral({ navigation }) {
 
             const fetchData = () => {
                 const listener = pesquisarProduto(String(searchText).toLowerCase(), list => {
-    
+
                     setState((prevState) => ({
                         ...prevState,
                         list: list,
                         load: false
                     }));
                 });
-    
+
                 return listener;
             };
-    
+
             return fetchData();
 
         };
@@ -246,7 +260,9 @@ export default function ProdutosCentral({ navigation }) {
                 setState((prevState) => ({
                     ...prevState,
                     list: list,
-                    load: false
+                    load: false,
+                    searchMode: false,
+                    searchText: ''
                 }));
             });
 
@@ -259,20 +275,32 @@ export default function ProdutosCentral({ navigation }) {
     }, []);
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.container}>
+        <PaperProvider>
+            <BottomSheetModalProvider>
+                <View style={styles.container}>
 
-                <Content
-                    click={openEditor}
-                    state={state} />
+                    <Content
+                        click={openEditor}
+                        state={state} />
 
-                <BottomSheetProdutos
-                    refs={bottomSheetModalRef}
-                    index={index}
-                    points={snapPoints}
-                    callback={handleSheetChanges} />
+                    <BottomSheetProdutos
+                        refs={bottomSheetModalRef}
+                        index={index}
+                        points={snapPoints}
+                        callback={handleSheetChanges} />
 
-            </View>
-        </BottomSheetModalProvider>
+
+
+                </View>
+            </BottomSheetModalProvider>
+            <FAB
+                icon="plus"
+                label='NOVO PRODUTO'
+                color='#fff'
+                style={styles.fab}
+                onPress={() => navigation.navigate('Editor de Produto')}
+            />
+        </PaperProvider>
+
     );
 }

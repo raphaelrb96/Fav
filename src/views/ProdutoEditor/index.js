@@ -90,7 +90,7 @@ export default function ProdutoEditor({ navigation, route }) {
 
     const bottomSheetModalRef = useRef();
     const snapPoints = useMemo(() => ['90%'], []);
-    const startProd = route.params.produto ? route.params.produto : getNewProdutoDoc();
+    const startProd = route.params?.produto ? route.params.produto : getNewProdutoDoc();
     const [state, setState] = useState({
         produto: startProd,
         load: false,
@@ -150,6 +150,8 @@ export default function ProdutoEditor({ navigation, route }) {
         }
 
     };
+
+    console.log('render editor')
 
 
     return (
