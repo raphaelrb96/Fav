@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, LogBox, Linking, YellowBox } from 'react-native';
 import { List, FAB, Portal, Provider as PaperProvider, DefaultTheme, Dialog, TextInput, Button } from 'react-native-paper';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { colorCinza, colorPrimary, colorSecondary, colorSecondaryLight } from '../../constantes/cores';
@@ -388,10 +388,23 @@ export default function NovaVendas({ navigation }) {
                     close();
                     navigation.navigate('Cancelamento', { item: itemDetalhe });
                 }}
+                editar={() => {
+                    close();
+                    navigation.navigate('Editar Pedido', { produto: itemDetalhe });
+                }}
                 item={data}
             />
         );
     };
+
+    const renderBackdrop = useCallback((props) => (
+        <BottomSheetBackdrop
+            {...props}
+            opacity={0.4}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+        />
+    ), []);
 
 
     const elemento = <DetalheFragment data={index === -1 ? null : itemDetalhe} />;
@@ -478,17 +491,61 @@ export default function NovaVendas({ navigation }) {
         <PaperProvider style={styles.container}>
             <Portal>
 
-                <View style={styles.containerBottom}>
+                <Portal style={styles.containerBottom}>
                     <FlatList
                         keyExtractor={item => item.idCompra}
                         data={DATA_LIST}
                         ListHeaderComponent={() => <HeaderVendas resumo={resumo} prods={PRODS} classificar={classificar} title={TITULO_LIST} maisAtrasada={resumo.maisAtrasada} canceladas={resumo.numCanceladas} concluidas={resumo.numConcluidas} emRota={resumo.numEmRota} atrasadas={resumo.numAtrasadas} novas={resumo.numNovas} />}
                         renderItem={({ item }) => <ItemVenda click={click} key={item.idCompra} item={item} />}
                     />
+                    <FAB.Group
+                        theme={theme}
+                        fabStyle={styles.fab}
+                        open={open}
+                        icon={'filter'}
+                        backdropColor='#00000070'
+                        actions={[
+                            {
+                                icon: 'calendar-month',
+                                label: '1 mês',
+                                containerStyle: styles.fab,
+                                style: styles.fab,
+                                onPress: () => changeFiltro(4),
+                            },
+                            {
+                                icon: 'calendar-week',
+                                label: '1 semana',
+                                containerStyle: styles.fab,
+                                style: styles.fab,
+                                onPress: () => changeFiltro(3),
+                            },
+                            {
+                                icon: 'calendar-today',
+                                label: '48 horas',
+                                containerStyle: styles.fab,
+                                style: styles.fab,
+                                onPress: () => changeFiltro(2),
+                            },
+                            {
+                                icon: 'calendar-clock',
+                                label: 'Hoje',
+                                containerStyle: styles.fab,
+                                style: styles.fab,
+                                onPress: () => changeFiltro(1),
+                            },
+                        ]}
+                        onStateChange={onStateChange}
+                        onPress={() => {
+                            if (open) {
+                                // do something if the speed dial is open
+                            }
+                        }}
+                    />
                     <BottomSheet
                         style={styles.bottomSheet}
                         ref={bottomSheetRef}
                         index={index}
+                        backdropComponent={renderBackdrop}
                         enablePanDownToClose={true}
                         snapPoints={snapPoints}
                         onChange={handleSheetChanges}>
@@ -496,7 +553,7 @@ export default function NovaVendas({ navigation }) {
                             {elemento}
                         </BottomSheetScrollView>
                     </BottomSheet>
-                </View>
+                </Portal>
 
 
                 <Dialog visible={visible} onDismiss={hideDialog}>
@@ -520,49 +577,7 @@ export default function NovaVendas({ navigation }) {
                 </Dialog>
 
 
-                <FAB.Group
-                    theme={theme}
-                    fabStyle={styles.fab}
-                    open={open}
-                    icon={'filter'}
-                    backdropColor='#00000070'
-                    actions={[
-                        {
-                            icon: 'calendar-month',
-                            label: '1 mês',
-                            containerStyle: styles.fab,
-                            style: styles.fab,
-                            onPress: () => changeFiltro(4),
-                        },
-                        {
-                            icon: 'calendar-week',
-                            label: '1 semana',
-                            containerStyle: styles.fab,
-                            style: styles.fab,
-                            onPress: () => changeFiltro(3),
-                        },
-                        {
-                            icon: 'calendar-today',
-                            label: '48 horas',
-                            containerStyle: styles.fab,
-                            style: styles.fab,
-                            onPress: () => changeFiltro(2),
-                        },
-                        {
-                            icon: 'calendar-clock',
-                            label: 'Hoje',
-                            containerStyle: styles.fab,
-                            style: styles.fab,
-                            onPress: () => changeFiltro(1),
-                        },
-                    ]}
-                    onStateChange={onStateChange}
-                    onPress={() => {
-                        if (open) {
-                            // do something if the speed dial is open
-                        }
-                    }}
-                />
+
             </Portal>
         </PaperProvider>
     );

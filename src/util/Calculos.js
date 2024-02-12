@@ -1,33 +1,33 @@
 
 
 export function getValorVarejo(valor) {
-    if(valor < 50) return 50;
+    if (valor < 50) return 50;
     return valor;
 };
 
 export function getValorAtacado(valor) {
-    if(valor < 50) return 50 - 30;
+    if (valor < 50) return 50 - 30;
     return valor - 30;
 };
 
 export function getValorAtacarejo(valor) {
-    if(valor < 50) return 50 - 20;
+    if (valor < 50) return 50 - 20;
     return valor - 20;
 };
 
 export function getValorPromocional(valor) {
-    if(valor < 50) return 50 - 10;
+    if (valor < 50) return 50 - 10;
     return valor - 10;
 };
 
 
 export function getListaPrecificacao(comissao, valor, isAtacado) {
     let precificacoes = [];
-    
+
     //varejo
     let valVarejo = getValorVarejo(valor);
     let comVarejo = comissao;
-    if(comissao < 15) {
+    if (comissao < 15) {
         comVarejo = 15;
     }
     const objVarejo = {
@@ -78,10 +78,32 @@ export function getListaPrecificacao(comissao, valor, isAtacado) {
         quantidadeMinima: 6
     };
 
-    if(isAtacado) {
+    if (isAtacado) {
         precificacoes.push(objAtacado);
     }
 
     return precificacoes;
 
+};
+
+export function findRealValor(valor, id) {
+    let v = 0;
+
+    switch (id) {
+        default:
+        case 0:
+            v = valor;
+            break;
+        case 1:
+            v = valor + 10;
+            break;
+        case 2:
+            v = valor + 20;
+            break;
+        case 3:
+            v = valor + 30;
+            break;
+    }
+
+    return getListaPrecificacao(15, v, true);
 };

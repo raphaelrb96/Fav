@@ -2,23 +2,27 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, FlatList, LogBox } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetSectionList } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import firestore from '@react-native-firebase/firestore';
 import Pb from '../../components/Pb';
 import ItemProdutoCentral from '../../components/ItemProdutoCentral';
 import { FAB, PaperProvider, Searchbar } from 'react-native-paper';
 import { colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
+import { CATEGORIA_LIST } from '../../util/Categorias';
+
 
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
         backgroundColor: 'transparent',
+        flex: 1
     },
     contentContainer: {
-        flex: 1,
-        alignItems: 'center',
+        backgroundColor: '#fff'
+    },
+    row: {
+        flexDirection: 'row'
     },
     bottomSheet: {
         elevation: 18
@@ -40,12 +44,77 @@ const styles = StyleSheet.create({
         backgroundColor: colorPrimaryDark,
         color: '#fff'
     },
+    containerLoad: {
+        height: 150
+    },
+    sectionHeaderContainer: {
+        backgroundColor: "white",
+        padding: 12,
+    },
+    itemContainer: {
+        padding: 12,
+        backgroundColor: "#fff",
+        borderTopWidth: 1,
+        borderTopColor: '#eee',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee'
+    },
+    sectionHeaderContainerText: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginTop: 16,
+        marginBottom: 6
+    },
+    itemContainerText: {
+
+    }
 });
 
-const listarProdutos = (listener) => {
+const definirRef = (type) => {
+
+    let ref = firestore().collection('produtos').limit(50);
+
+    switch (type) {
+        case 991:
+            ref = firestore().collection('produtos').orderBy("timeUpdate", "desc").limit(200);
+            break;
+        case 992:
+            ref = firestore().collection('produtos').orderBy("timeUpdate", "asc").limit(200);
+            break;
+        case 993:
+            ref = firestore().collection('produtos').orderBy("prodValor", "desc").limit(200);
+            break;
+        case 994:
+            ref = firestore().collection('produtos').orderBy("prodValor", "asc").limit(200);
+            break;
+        case 995:
+            ref = firestore().collection('produtos').orderBy("comissao", "desc").limit(200);
+            break;
+        case 996:
+            ref = firestore().collection('produtos').orderBy("comissao", "asc").limit(200);
+            break;
+        case 881:
+            ref = firestore().collection('produtos').where("atacado", "==", true).limit(200);
+            break;
+        case 882:
+            ref = firestore().collection('produtos').where("disponivel", "==", true).limit(400);
+            break;
+        case 883:
+            ref = firestore().collection('produtos').where("disponivel", "==", false).limit(400);
+            break;
+        default:
+            ref = firestore().collection('produtos').where("categorias." + type, "==", true).limit(400);
+            break;
+    }
+
+    return ref;
+
+};
+
+const listarProdutos = (filterType, listener) => {
 
 
-    const ref = firestore().collection('produtos').orderBy("timeUpdate", "desc").limit(50);
+    const ref = definirRef(filterType);
 
     const onNext = snap => {
 
@@ -118,14 +187,18 @@ const pesquisarProduto = (text, listener) => {
 const switchDisponibilidade = (produto) => {
     const disp = !produto.disponivel;
     const referencedb = firestore().collection('produtos').doc(produto.idProduto);
-    referencedb.update({disponivel: disp});
+    referencedb.update({ disponivel: disp });
 };
 
 function Content({ state, click }) {
 
     const { list, load } = state;
 
-    if (load) return <Pb />;
+    if (load) return (
+        <View style={styles.content}>
+            <Pb />
+        </View>
+    );
 
     return (
         <View style={styles.content}>
@@ -138,20 +211,79 @@ function Content({ state, click }) {
     );
 }
 
-function BottomSheetProdutos({ refs, index, points, callback }) {
+function BottomSheetProdutos({ refs, index, points, callback, filter }) {
 
+    const filtros = [
+        {
+            title: 'Classificar por:',
+            data: [
+                {nome: 'Mais Recentes', id: 991},
+                {nome: 'Mais Antigos', id: 992},
+                {nome: 'Valores maiores', id: 993},
+                {nome: 'Valores menores', id: 994},
+                {nome: 'Comissões maiores', id: 995},
+                {nome: 'Comissões menores', id: 996},
+            ]
+        },
+        {
+            title: 'Filtrar por:',
+            data: [
+                {nome: 'Produto em Atacado', id: 881},
+                {nome: 'Produto disponivel', id: 882},
+                {nome: 'Produto indisponivel', id: 883},
+            ]
+        },
+        {
+            title: 'Listar por categoria:',
+            data: [
+                ...CATEGORIA_LIST,
+            ]
+        },
+    ];
+
+    const renderSectionHeader = useCallback(
+        ({ section }) => (
+            <View style={styles.sectionHeaderContainer}>
+                <Text style={styles.sectionHeaderContainerText}>{section.title}</Text>
+            </View>
+        ),
+        []
+    );
+
+    const renderItem = useCallback(
+        ({ item, index }) => (
+            <TouchableOpacity onPress={() => filter(item.id ? item.id : index)} style={styles.itemContainer}>
+                <Text style={styles.itemContainerText}>{item.nome ? item.nome : item}</Text>
+            </TouchableOpacity>
+        ),
+        []
+    );
+
+    const renderBackdrop = useCallback((props) => (
+        <BottomSheetBackdrop
+            {...props}
+            opacity={0.4}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+        />
+    ), []);
 
     return (
         <BottomSheet
             ref={refs}
             index={index}
             style={styles.bottomSheet}
+            backdropComponent={renderBackdrop}
             enablePanDownToClose={true}
             snapPoints={points}
             onChange={callback}>
-            <View style={styles.contentContainer}>
-
-            </View>
+            <BottomSheetSectionList
+                sections={filtros}
+                keyExtractor={(i, index) => i.id ? i.id : index}
+                renderSectionHeader={renderSectionHeader}
+                renderItem={renderItem}
+                contentContainerStyle={styles.contentContainer}
+            />
         </BottomSheet>
     );
 };
@@ -164,9 +296,15 @@ export default function ProdutosCentral({ navigation }) {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <TouchableOpacity onPress={handlePresentModalPress}>
-                    <Icon style={{ marginRight: 16 }} color={'#000'} size={24} name="magnify" />
-                </TouchableOpacity>
+                <View style={styles.row}>
+                    <TouchableOpacity onPress={handlePresentModalPress}>
+                        <Icon style={{ marginRight: 16 }} color={'#000'} size={24} name="magnify" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={clickFilter}>
+                        <Icon style={{ marginRight: 16 }} color={'#000'} size={24} name="filter" />
+                    </TouchableOpacity>
+                </View>
+
             )
         });
     }, []);
@@ -179,10 +317,11 @@ export default function ProdutosCentral({ navigation }) {
         list: null,
         load: true,
         searchMode: false,
-        searchText: ''
+        searchText: '',
+        filterType: 991
     });
 
-    const { searchText, searchMode } = state;
+    const { searchText, searchMode, filterType } = state;
 
     useLayoutEffect(() => {
         if (!searchMode) return;
@@ -243,6 +382,27 @@ export default function ProdutosCentral({ navigation }) {
         }));
     }, []);
 
+    const clickFilter = useCallback(() => {
+
+        if (bottomSheetModalRef.current !== undefined) {
+            bottomSheetModalRef.current.expand();
+        }
+        
+    }, []);
+
+
+    const handlerFilterChanges = useCallback((type) => {
+
+        if (bottomSheetModalRef.current !== undefined) {
+            bottomSheetModalRef.current.close();
+        }
+
+        setState((prevState) => ({
+            ...prevState,
+            filterType: type
+        }));
+    }, []);
+
     const handleSheetChanges = useCallback((index) => {
         console.log('handleSheetChanges', index);
         setIndex(index);
@@ -252,10 +412,17 @@ export default function ProdutosCentral({ navigation }) {
         navigation.navigate('Editor de Produto', { produto: item });
     };
 
+
+
     useEffect(() => {
 
+        setState((prevState) => ({
+            ...prevState,
+            load: true,
+        }));
+
         const fetchData = () => {
-            const listener = listarProdutos(list => {
+            const listener = listarProdutos(filterType, list => {
 
                 setState((prevState) => ({
                     ...prevState,
@@ -272,10 +439,12 @@ export default function ProdutosCentral({ navigation }) {
         return fetchData();
 
 
-    }, []);
+    }, [filterType]);
 
     return (
         <PaperProvider>
+
+
             <BottomSheetModalProvider>
                 <View style={styles.container}>
 
@@ -283,23 +452,26 @@ export default function ProdutosCentral({ navigation }) {
                         click={openEditor}
                         state={state} />
 
+                    <FAB
+                        icon="plus"
+                        label='NOVO PRODUTO'
+                        color='#fff'
+                        style={styles.fab}
+                        onPress={() => navigation.navigate('Editor de Produto')}
+                    />
+
                     <BottomSheetProdutos
                         refs={bottomSheetModalRef}
                         index={index}
                         points={snapPoints}
+                        filter={handlerFilterChanges}
                         callback={handleSheetChanges} />
 
 
 
                 </View>
             </BottomSheetModalProvider>
-            <FAB
-                icon="plus"
-                label='NOVO PRODUTO'
-                color='#fff'
-                style={styles.fab}
-                onPress={() => navigation.navigate('Editor de Produto')}
-            />
+
         </PaperProvider>
 
     );

@@ -33,6 +33,7 @@ import Comissoes from './src/views/Comissoes';
 import UsuariosCentral from './src/views/UsuariosCentral';
 import ProdutoEditor from './src/views/ProdutoEditor';
 import { firebase } from '@react-native-firebase/auth';
+import EditarPedido from './src/views/EditarPedido';
 
 const Stack = createStackNavigator();
 
@@ -285,6 +286,11 @@ let App = () => {
         <Stack.Screen
           name="Telas e Feeds"
           component={Feeds}
+        />
+
+        <Stack.Screen
+          name="Editar Pedido"
+          component={EditarPedido}
         />
 
       </Stack.Navigator>

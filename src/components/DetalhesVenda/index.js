@@ -1,7 +1,7 @@
 import Pb from "../Pb";
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
-import { List, Card, Portal, Provider, DefaultTheme, Button, Headline, Divider, Icon } from 'react-native-paper';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
+import { List, Card, Portal, Provider, DefaultTheme, Button, Headline, Divider, Icon, TextInput } from 'react-native-paper';
 import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryDark, colorSecondaryLight } from '../../constantes/cores';
 import ItemProdutoVenda from "../ItemProdutoVenda";
 import firestore from '@react-native-firebase/firestore';
@@ -78,7 +78,26 @@ const styles = StyleSheet.create({
     },
     spacingBottomEnd: {
         height: 120
-    }
+    },
+    titleBold: {
+        fontWeight: 'bold',
+        color: 'black'
+    },
+    input: {
+        marginRight: 16,
+        marginLeft: 16,
+        paddingBottom: 0,
+        marginBottom: 10,
+        maxHeight: 250,
+        backgroundColor: 'transparent'
+    },
+    iconInput: {
+        marginTop: 6,
+    },
+    btnSalvarValores: {
+        marginBottom: 6,
+        marginHorizontal: 16,
+    },
 });
 
 const theme = {
@@ -202,7 +221,7 @@ async function updateVenda(state, item, callback) {
 
 
 
-export default function Detalhes({ item, close, show, cancel }) {
+export default function Detalhes({ item, close, show, cancel, editar }) {
 
     const [pb, setPb] = useState(false);
 
@@ -212,21 +231,151 @@ export default function Detalhes({ item, close, show, cancel }) {
         return <Pb />;
     }
 
-    const { comissaoTotal, nomeCliente, phoneCliente, adress, estado, complemento, pagamentoFinal, parcelaFinal, cep, cidade, obs, entregaFinal, listaDeProdutos, idCompra, garantiaFinal, uidUserRevendedor, existeComissaoAfiliados } = item;
+    const { statusCompra, comissaoTotal, nomeCliente, phoneCliente, adress, estado, complemento, pagamentoFinal, parcelaFinal, cep, cidade, obs, entregaFinal, listaDeProdutos, idCompra, garantiaFinal, uidUserRevendedor, existeComissaoAfiliados } = item;
 
 
     let atualizar = (state) => {
 
-        //setPb(true);
-        close();
-        updateVenda(state, item, (sucess) => {
-            if (sucess) {
-                //refresh();
+        const finalizar = () => {
+            close();
+            updateVenda(state, item, (sucess) => {
+                if (sucess) {
+                    //refresh();
 
-            }
-        });
+                }
+            });
+        };
+
+        if (statusCompra === 3 || statusCompra === 5) {
+            Alert.alert("Acesso negado", "Venda concluida ou cancelada so vai poder ser editada pelo gerente");
+            return null;
+        }
+
+        finalizar();
+
     };
 
+    function Actions() {
+
+        const [acess, setAcess] = useState({
+            login: '',
+            senha: '',
+            aberto: false
+        });
+
+        const setData = () => {
+            setAcess((prevState) => ({
+                ...prevState,
+
+            }));
+        };
+
+
+        const liberar = () => {
+            if (acess.login === '0senha' && acess.senha === '0login') {
+                setAcess((prevState) => ({
+                    ...prevState,
+                    aberto: true
+                }));
+            }
+
+        };
+
+        const setLogin = (e) => {
+            console.log(e)
+            setAcess((prevState) => ({
+                ...prevState,
+                login: e
+            }));
+        };
+
+        const setSenha = (e) => {
+            setAcess((prevState) => ({
+                ...prevState,
+                senha: e
+            }));
+        };
+
+
+        if ((item.statusCompra === 3 || item.statusCompra === 5) && !acess.aberto) {
+            return (
+                <>
+                    <View style={styles.spacing} />
+                    <Divider style={styles.divider} />
+                    <View style={styles.spacing} />
+                    <Headline style={styles.subheader}>Acesso bloquado a vendas concluidas e canceladas</Headline>
+                    <View style={styles.spacing} />
+
+                    <TextInput
+                        theme={theme}
+                        defaultValue={acess.login}
+                        label="Login"
+                        mode="outlined"
+                        style={styles.input}
+                        onChangeText={setLogin}
+                    />
+
+                    <TextInput
+                        theme={theme}
+                        defaultValue={acess.senha}
+                        label="Senha"
+                        mode="outlined"
+                        style={styles.input}
+                        onChangeText={setSenha}
+                    />
+                    <View style={styles.spacing} />
+                    <View style={styles.spacing} />
+                    <View style={styles.spacing} />
+
+                    <Button
+                        compact
+                        style={styles.btnSalvarValores}
+                        onPress={liberar}
+                        buttonColor='#00000020'
+                        mode='contained-tonal'>Liberar Acesso</Button>
+                </>
+            );
+        }
+
+        return (
+            <View>
+                <View style={styles.spacing} />
+                <Divider style={styles.divider} />
+                <View style={styles.spacing} />
+                <View style={styles.spacing} />
+
+                <Card.Actions style={styles.buttons}>
+                    <Button mode="outlined" uppercase onPress={() => atualizar(2)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("alert-circle-check")}>
+                        Confirmar
+                    </Button>
+                    <Button mode="outlined" uppercase onPress={() => atualizar(4)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("rocket-launch")}>
+                        Liberar
+                    </Button>
+
+                </Card.Actions>
+
+                <Card.Actions style={styles.buttons}>
+                    <Button mode="outlined" uppercase onPress={() => cancel(3)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("close-box")}>
+                        Cancelar
+                    </Button>
+                    <Button mode="outlined" uppercase onPress={() => atualizar(5)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("shield-check")}>
+                        concluir
+                    </Button>
+
+                </Card.Actions>
+
+                <Card.Actions style={styles.buttons}>
+                    <Button uppercase onPress={() => editar()} theme={theme} style={styles.btnMensagem} icon={() => renderIcon("lock-outline")} mode="outlined" ><Text>Editar Informações</Text></Button>
+
+                </Card.Actions>
+
+                <Card.Actions style={styles.buttons}>
+                    <Button uppercase onPress={() => show()} theme={theme} style={styles.btnMensagem} mode="contained" ><Text>Abrir Whatsapp</Text></Button>
+
+                </Card.Actions>
+            </View>
+        );
+    }
 
 
     // renders
@@ -234,7 +383,6 @@ export default function Detalhes({ item, close, show, cancel }) {
         <View style={styles.detalhe}>
             <List.Section>
 
-                <View style={styles.spacing} />
                 <Headline style={styles.subheader}>Produtos do Pedido</Headline>
 
                 {item.listaDeProdutos.map(obj => <ItemProdutoVenda style={styles.dados} key={obj.idProdut} path={obj.caminhoImg} title={`${obj.quantidade} ${obj.produtoName.toLowerCase()}`} produto={obj} description={`R$ ${(obj.valorUni * obj.quantidade)},00`} />)}
@@ -243,25 +391,22 @@ export default function Detalhes({ item, close, show, cancel }) {
                 <Divider style={styles.divider} />
                 <View style={styles.spacing} />
 
-
                 <Headline style={styles.subheader}>Informações do Pedido</Headline>
-                <List.Item style={styles.dados} title={phoneCliente} titleNumberOfLines={5} description={'Numero pra Contato'} />
-                <List.Item style={styles.dados} title={nomeCliente} titleNumberOfLines={5} description={'Nome do comprador'} />
+                <List.Item style={styles.dados} titleStyle={styles.titleBold} descriptionStyle={styles.titleBold} title={formartar(item.valorTotal)} description={'Valor total a pagar'} />
+                <List.Item style={styles.dados} title={phoneCliente} titleNumberOfLines={5} description={nomeCliente} />
                 {obs ? <List.Item style={styles.dados} titleNumberOfLines={5} title={item.obs} description={'Observações'} /> : null}
-                <List.Item style={styles.dados} title={adress} titleNumberOfLines={5} description={'Endereço e numero da casa'} />
-                <List.Item style={styles.dados} title={complemento} titleNumberOfLines={5} description={'Bairro'} />
-                {(cep) ? <List.Item style={styles.dados} title={cep} description={'CEP'} /> : null}
-                {(cidade) ? <List.Item style={styles.dados} title={cidade} description={'Cidade'} /> : null}
-                {(estado) ? <List.Item style={styles.dados} title={estado} description={'Estado'} /> : null}
-                <List.Item style={styles.dados} title={pagamentoFinal ? pagamentoFinal.titulo : getFormaPagamento(item.formaDePagar)} description={'Forma de pagamento'} />
-                {(parcelaFinal && (pagamentoFinal.id === 3 || pagamentoFinal.id === 2)) ? <List.Item style={styles.dados} title={parcelaFinal.titulo} description={parcelaFinal.valorString} /> : null}
-                <List.Item style={styles.dados} title={formartar(item.valorTotal)} description={'Valor total a pagar'} />
-                {entregaFinal ? <List.Item style={styles.dados} title={entregaFinal.valorString} description={entregaFinal.titulo} /> : null}
+                <List.Item style={styles.dados} title={adress} titleNumberOfLines={5} description={complemento} />
+                {(cidade && estado) ? <List.Item style={styles.dados} title={cidade} description={estado} /> : null}
+                <List.Item style={styles.dados} title={pagamentoFinal ? pagamentoFinal.titulo : getFormaPagamento(item.formaDePagar)} description={(parcelaFinal && (pagamentoFinal.id === 3 || pagamentoFinal.id === 2)) ? parcelaFinal.titulo : 'Pagamento à vista'} />
+                {(parcelaFinal && (pagamentoFinal.id === 3 || pagamentoFinal.id === 2)) ? <List.Item style={styles.dados} title={parcelaFinal.descricao} description={parcelaFinal.valorString} /> : null}
+                {entregaFinal ? <List.Item style={styles.dados} title={entregaFinal.valorString} description={'Taxa de ' + entregaFinal.titulo} /> : null}
                 {garantiaFinal ? <List.Item style={styles.dados} title={garantiaFinal.titulo + ': ' + garantiaFinal.valorString} descriptionNumberOfLines={4} description={garantiaFinal.descricao} /> : null}
 
                 <View style={styles.spacing} />
                 <Divider style={styles.divider} />
                 <View style={styles.spacing} />
+
+
 
                 <Headline style={styles.subheader}>Detalhes do Vendedor</Headline>
                 <List.Item style={styles.dados} title={dateToYMD(new Date(item.hora))} description={'Data e hora da venda'} />
@@ -279,35 +424,9 @@ export default function Detalhes({ item, close, show, cancel }) {
 
             </List.Section>
 
-            <View style={styles.spacing} />
-            <Divider style={styles.divider} />
-            <View style={styles.spacing} />
-            <View style={styles.spacing} />
 
-            <Card.Actions style={styles.buttons}>
-                <Button mode="outlined" uppercase onPress={() => atualizar(2)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("alert-circle-check")}>
-                    Confirmar
-                </Button>
-                <Button mode="outlined" uppercase onPress={() => atualizar(4)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("rocket-launch")}>
-                    Liberar
-                </Button>
 
-            </Card.Actions>
-
-            <Card.Actions style={styles.buttons}>
-                <Button mode="outlined" uppercase onPress={() => cancel(3)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("close-box")}>
-                    Cancelar
-                </Button>
-                <Button mode="outlined" uppercase onPress={() => atualizar(5)} theme={theme} style={styles.botao} labelStyle={styles.bt} icon={() => renderIcon("shield-check")}>
-                    concluir
-                </Button>
-
-            </Card.Actions>
-
-            <Card.Actions style={styles.buttons}>
-                <Button uppercase onPress={() => show()} theme={theme} style={styles.btnMensagem} mode="contained" ><Text>Abrir Whatsapp</Text></Button>
-
-            </Card.Actions>
+            <Actions />
 
             <View style={styles.spacingBottomEnd} />
         </View>
