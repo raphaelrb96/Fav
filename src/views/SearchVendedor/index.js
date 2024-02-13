@@ -2,7 +2,7 @@ import React, { useLayoutEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, DefaultTheme, Searchbar, Avatar, Headline, Caption, Text, List, Button } from 'react-native-paper';
 import { useEffect, useState } from 'react/cjs/react.development';
-import { colorCinza, colorPrimary, colorPrimaryDark } from '../../constantes/cores';
+import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
 import Pb from '../../components/Pb';
 import firestore from '@react-native-firebase/firestore';
 
@@ -14,7 +14,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     toolbar: {
-        height: 60
+        height: 60,
+        borderRadius: 0,
+        backgroundColor: colorSecondaryLight
     },
     row: {
         flexDirection: 'row',

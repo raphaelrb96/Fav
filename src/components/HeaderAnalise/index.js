@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
         marginTop: 4,
         marginBottom: 4,
         padding: 0,
+        backgroundColor: '#fff'
     },
     row: {
         flexDirection: 'row',
@@ -216,8 +217,8 @@ export default function HeaderAnalise({ produtos, total, ticket, ativos, comisso
                         <Card.Title
                             titleStyle={styles.title}
                             subtitleStyle={styles.text}
-                            title={formartar(resumo.totalCancelada)}
-                            subtitle="Cancelamento" />
+                            title={ativos}
+                            subtitle="N° Vendedores" />
                     </Card>
                     <Card style={styles.itemContainer}>
                         <Card.Title
@@ -228,6 +229,7 @@ export default function HeaderAnalise({ produtos, total, ticket, ativos, comisso
                     </Card>
                 </View>
             </View>
+            <View style={styles.spacing} />
             <View style={styles.spacing} />
             <FlatList
                 data={produtos}

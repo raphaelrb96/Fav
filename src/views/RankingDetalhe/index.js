@@ -10,7 +10,7 @@ import {
 
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-//import Clipboard from '@react-native-community/clipboard';
+import { Clipboard } from 'react-native'; 
 import Pb from '../../components/Pb';
 
 
@@ -142,10 +142,10 @@ let RankingDetalhe = ({route}) => {
 
                     if(docBonus) {
                         
-                        const bonusV3 = 3;
-                        const bonusV6 = 6;
-                        const bonusV10 = 10;
-                        const bonusV12 = 12;
+                        const bonusV3 = 2;
+                        const bonusV6 = 4;
+                        const bonusV10 = 12;
+                        const bonusV12 = 20;
 
                         let stringClipCopy = `RESULTADO DO DIA \n${dateToYMD(new Date(route.params.de))}\n\n`;
 
@@ -157,19 +157,19 @@ let RankingDetalhe = ({route}) => {
                                 let linha = `R$100 ${listaNova[x].nome}: ${numDeVendasX}\n`;
                                 stringClipCopy = stringClipCopy + linha;
                             } else if(numDeVendasX >= bonusV10) {
-                                let linha = `R$75 ${listaNova[x].nome}: ${numDeVendasX}\n`;
+                                let linha = `R$60 ${listaNova[x].nome}: ${numDeVendasX}\n`;
                                 stringClipCopy = stringClipCopy + linha;
                             } else if(numDeVendasX >= bonusV6) {
-                                let linha = `R$50 ${listaNova[x].nome}: ${numDeVendasX}\n`;
+                                let linha = `R$20 ${listaNova[x].nome}: ${numDeVendasX}\n`;
                                 stringClipCopy = stringClipCopy + linha;
                             } else if(numDeVendasX >= bonusV3) {
-                                let linha = `R$20 ${listaNova[x].nome}: ${numDeVendasX}\n`;
+                                let linha = `R$10 ${listaNova[x].nome}: ${numDeVendasX}\n`;
                                 stringClipCopy = stringClipCopy + linha;
                             }
 
                         }
 
-                        //Clipboard.setString(stringClipCopy);
+                        Clipboard.setString(stringClipCopy);
 
                     } else {
                         let stringClipCopy = '';
@@ -178,7 +178,7 @@ let RankingDetalhe = ({route}) => {
                             let linha = `${listaNova[x].nome}: ${listaNova[x].vendas}\n`;
                             stringClipCopy = stringClipCopy + linha;
                         }
-                        //Clipboard.setString(stringClipCopy);
+                        Clipboard.setString(stringClipCopy);
                     }
 
                     

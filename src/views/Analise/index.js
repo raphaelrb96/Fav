@@ -4,7 +4,7 @@ import { List, FAB, Portal, Provider as PaperProvider, DefaultTheme } from 'reac
 
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { colorCinza, colorPrimary } from '../../constantes/cores';
+import { colorCinza, colorPrimary, colorSecondaryDark, colorSecondaryLight } from '../../constantes/cores';
 import Pb from '../../components/Pb';
 import ItemAnaliseUsuario from '../../components/ItemAnaliseUsuario';
 import HeaderAnalise from '../../components/HeaderAnalise';
@@ -20,7 +20,7 @@ const theme = {
 
 const styles = StyleSheet.create({
     fab: {
-        backgroundColor: colorPrimary
+        backgroundColor: colorSecondaryLight
     }
 });
 
@@ -477,27 +477,44 @@ export default function Analise({ navigation }) {
                     theme={theme}
                     fabStyle={styles.fab}
                     open={open}
+                    backdropColor='#00000099'
                     icon={'filter'}
                     actions={[
                         {
                             icon: 'calendar-month',
                             label: '1 mês',
                             onPress: () => changeFiltro(4),
+                            style: styles.fab,
+                            labelStyle: {
+                                color: '#fff'
+                            }
                         },
                         {
                             icon: 'calendar-week',
                             label: '1 semana',
                             onPress: () => changeFiltro(3),
+                            style: styles.fab,
+                            labelStyle: {
+                                color: '#fff'
+                            }
                         },
                         {
                             icon: 'calendar-today',
                             label: '48 horas',
                             onPress: () => changeFiltro(2),
+                            style: styles.fab,
+                            labelStyle: {
+                                color: '#fff'
+                            }
                         },
                         {
                             icon: 'calendar-clock',
                             label: 'Hoje',
                             onPress: () => changeFiltro(1),
+                            style: styles.fab,
+                            labelStyle: {
+                                color: '#fff'
+                            }
                         },
                     ]}
                     onStateChange={onStateChange}
