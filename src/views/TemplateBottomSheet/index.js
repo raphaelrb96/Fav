@@ -29,7 +29,7 @@ export default function Tamplate({ navigation }) {
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={handlePresentModalPress}>
-                    <Icon style={{ marginRight: 16 }} color={'#FFF'} size={24} name="plus" />
+                    <Icon style={{ marginRight: 16 }} color={'#000'} size={24} name="plus" />
                 </TouchableOpacity>
             )
         });
@@ -41,7 +41,7 @@ export default function Tamplate({ navigation }) {
     const snapPoints = useMemo(() => ['80%'], []);
 
     const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
+        bottomSheetModalRef.current?.expand();
     }, []);
 
     const handleSheetChanges = useCallback((index) => {

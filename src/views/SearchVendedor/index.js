@@ -1,7 +1,6 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, DefaultTheme, Searchbar, Avatar, Headline, Caption, Text, List, Button } from 'react-native-paper';
-import { useEffect, useState } from 'react/cjs/react.development';
 import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
 import Pb from '../../components/Pb';
 import firestore from '@react-native-firebase/firestore';
@@ -57,16 +56,16 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         borderWidth: 2,
         borderColor: '#4F4F4F',
-      },
-      textBtao: {
-       fontSize: 18,
-       color: '#4F4F4F',
-       fontWeight: 'bold',
-      },
-      label: {
-        fontSize: 32, 
+    },
+    textBtao: {
+        fontSize: 18,
+        color: '#4F4F4F',
+        fontWeight: 'bold',
+    },
+    label: {
+        fontSize: 32,
         color: colorCinza
-      }
+    }
 });
 
 const thema = {
@@ -91,10 +90,10 @@ async function zerarPainel(list1, list2, uid, callback) {
 
 
     list1.forEach((item) => {
-        let {id, pagamentoRecebido, statusComissao} = item;
+        let { id, pagamentoRecebido, statusComissao } = item;
         if (pagamentoRecebido !== null || pagamentoRecebido !== undefined) {
             if (statusComissao === 5 && !pagamentoRecebido) {
-                
+
                 let refGeral = refComissoesUser.doc(id);
                 let refUser = refComissoesGeral.doc(id);
                 batch.update(refGeral, 'pagamentoRecebido', true);
@@ -102,12 +101,12 @@ async function zerarPainel(list1, list2, uid, callback) {
                 numDocumentos++;
             }
         }
-        
+
     });
 
     list2.forEach((item, index) => {
-        
-        let {statusCompra, idCompra, pagamentoRecebido} = item;
+
+        let { statusCompra, idCompra, pagamentoRecebido } = item;
         if (pagamentoRecebido !== null || pagamentoRecebido !== undefined) {
             if (statusCompra === 5 && !pagamentoRecebido) {
                 let refGeral = refVendasGeral.doc(idCompra);
@@ -117,19 +116,19 @@ async function zerarPainel(list1, list2, uid, callback) {
                 numDocumentos++;
             }
         }
-        
+
     });
 
     console.log(`num docs: ${numDocumentos}`);
 
     console.log('comit iniciado');
-    
+
     batch.commit().then(() => {
         return callback(true);
     }).catch(error => {
         console.log('ERROR: ');
         console.log(error);
-        
+
         return callback(false);
     })
 
@@ -154,7 +153,7 @@ async function getVendasAfiliados(uid, callback) {
                 aflOficiais.push(obj);
                 comissoesAfiliados = comissoesAfiliados + cms;
             }
-            
+
         });
 
         return callback(aflOficiais, comissoesAfiliados);
@@ -222,7 +221,7 @@ async function pesquisar(text, listener) {
         aflOficiais = list;
         comissoesAfiliados = value;
     });
-    
+
 
     console.log(comissoesAfiliados);
     console.log('Total: ' + (comissoesAfiliados + comissaoEmVendas));
@@ -235,7 +234,7 @@ function formartar(v) {
     return `R$ ${v.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
 }
 
-export default function SearchVendedor({navigation}) {
+export default function SearchVendedor({ navigation }) {
 
     const [text, setText] = useState('');
     const [pb, setPb] = useState(false);
@@ -254,7 +253,7 @@ export default function SearchVendedor({navigation}) {
     let blur = () => {
         setPb(true);
         pesquisar(text, (user, vendas, afls, cmsVenda, cmsAfl) => {
-            let {celular, pathFoto, nome, uid, userName, uidAdm, usernameAdm} = user;
+            let { celular, pathFoto, nome, uid, userName, uidAdm, usernameAdm } = user;
 
             setState({
                 user: {
@@ -276,7 +275,7 @@ export default function SearchVendedor({navigation}) {
             setPb(false);
 
         });
-    
+
     }
 
     useEffect(() => {
@@ -289,7 +288,7 @@ export default function SearchVendedor({navigation}) {
                 } else {
                     setZerando(false);
                 }
-                
+
             });
         }
 
@@ -311,7 +310,7 @@ export default function SearchVendedor({navigation}) {
         });
     }, [navigation, text]);
 
-    if(pb) {
+    if (pb) {
         return <Pb />
     }
 
@@ -319,14 +318,14 @@ export default function SearchVendedor({navigation}) {
         return (
             <View style={styles.container}>
                 <View style={styles.center}>
-                    <Avatar.Image theme={thema} size={60} source={{uri: state.user.pathFoto}} />
+                    <Avatar.Image theme={thema} size={60} source={{ uri: state.user.pathFoto }} />
                 </View>
-                
+
                 <Headline style={[styles.centerText, styles.bold]}>{state.user.nome}</Headline>
                 <Caption style={[styles.centerText, styles.bold]} >{`@${state.user.userName}`}</Caption>
                 <View style={styles.row}>
-                    <List.Item style={[styles.itemDados, styles.centerText,]}  title={formartar(state.cmsAfl)} description={`${state.afls.length} revendas`} />
-                    <List.Item style={[styles.itemDados, styles.centerText,]}  title={formartar(state.cmsVenda)} description={`${state.vendas.length} vendas`} />
+                    <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsAfl)} description={`${state.afls.length} revendas`} />
+                    <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsVenda)} description={`${state.vendas.length} vendas`} />
 
                 </View>
 
@@ -338,6 +337,6 @@ export default function SearchVendedor({navigation}) {
             </View>
         );
     }
-    
+
     return null;
 }

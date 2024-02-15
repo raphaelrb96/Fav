@@ -173,8 +173,8 @@ export default function ItemProdutoCentral({ path, nome, id, navigation, editor,
     const [disp, setDisp] = useState(disponivel);
 
     const onSwith = () => {
-        setDisp(disp ? false : true);
-        switc(produto);
+        //setDisp(disp ? false : true);
+        switc();
     };
 
     return (
@@ -188,12 +188,12 @@ export default function ItemProdutoCentral({ path, nome, id, navigation, editor,
 
                     <View style={styles.btItem}>
                         {
-                            timeUpdate ?
+                            timeUpdate ? 
                                 <View style={styles.row}>
                                     <Text numberOfLines={6} style={styles.labelHora}>
                                         {getHora(timeUpdate)}
                                     </Text>
-                                    <Switch color={disp ? colorPrimary : colorCinza} value={disp} style={styles.switch} onValueChange={onSwith} />
+                                    <Switch color={disponivel ? colorPrimary : colorCinza} value={disponivel} style={styles.switch} onValueChange={onSwith} />
                                 </View>
                                 :
                                 null

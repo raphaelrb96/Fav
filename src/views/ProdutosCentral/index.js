@@ -184,13 +184,21 @@ const pesquisarProduto = (text, listener) => {
     return unsubscribe;
 };
 
-const switchDisponibilidade = (produto) => {
+const switchDisponibilidade = (produto, setState, list, index) => {
     const disp = !produto.disponivel;
     const referencedb = firestore().collection('produtos').doc(produto.idProduto);
+    let novaLista = list;
+    
+    novaLista[index].disponivel = disp;
+    setState((prevState) => ({
+        ...prevState,
+        list: novaLista,
+    }));
+
     referencedb.update({ disponivel: disp });
 };
 
-function Content({ state, click }) {
+function Content({ state, click, setState }) {
 
     const { list, load } = state;
 
@@ -203,7 +211,7 @@ function Content({ state, click }) {
     return (
         <View style={styles.content}>
             <FlatList
-                renderItem={({ item }) => <ItemProdutoCentral click={click} produto={item} switc={switchDisponibilidade} />}
+                renderItem={({ item, index }) => <ItemProdutoCentral click={click} produto={item} switc={() => switchDisponibilidade(item, setState, list, index)} />}
                 ListHeaderComponent={() => <View style={styles.spacing} />}
                 data={list} />
         </View>
@@ -217,20 +225,20 @@ function BottomSheetProdutos({ refs, index, points, callback, filter }) {
         {
             title: 'Classificar por:',
             data: [
-                {nome: 'Mais Recentes', id: 991},
-                {nome: 'Mais Antigos', id: 992},
-                {nome: 'Valores maiores', id: 993},
-                {nome: 'Valores menores', id: 994},
-                {nome: 'Comissões maiores', id: 995},
-                {nome: 'Comissões menores', id: 996},
+                { nome: 'Mais Recentes', id: 991 },
+                { nome: 'Mais Antigos', id: 992 },
+                { nome: 'Valores maiores', id: 993 },
+                { nome: 'Valores menores', id: 994 },
+                { nome: 'Comissões maiores', id: 995 },
+                { nome: 'Comissões menores', id: 996 },
             ]
         },
         {
             title: 'Filtrar por:',
             data: [
-                {nome: 'Produto em Atacado', id: 881},
-                {nome: 'Produto disponivel', id: 882},
-                {nome: 'Produto indisponivel', id: 883},
+                { nome: 'Produto em Atacado', id: 881 },
+                { nome: 'Produto disponivel', id: 882 },
+                { nome: 'Produto indisponivel', id: 883 },
             ]
         },
         {
@@ -387,7 +395,7 @@ export default function ProdutosCentral({ navigation }) {
         if (bottomSheetModalRef.current !== undefined) {
             bottomSheetModalRef.current.expand();
         }
-        
+
     }, []);
 
 
@@ -423,7 +431,7 @@ export default function ProdutosCentral({ navigation }) {
 
         const fetchData = () => {
             const listener = listarProdutos(filterType, list => {
-
+                console.log('Listener Produto', list.length);
                 setState((prevState) => ({
                     ...prevState,
                     list: list,
@@ -450,6 +458,7 @@ export default function ProdutosCentral({ navigation }) {
 
                     <Content
                         click={openEditor}
+                        setState={setState}
                         state={state} />
 
                     <FAB
