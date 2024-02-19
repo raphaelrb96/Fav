@@ -463,6 +463,8 @@ function EditarItens({ listaDeProdutos, setState, open }) {
 
             if (i === index) {
 
+                if (quant === 1 && listaDeProdutos.length === 1) return;
+
 
                 const novaQuant = quant - 1;
                 const { valorUni, comissaoUnidade } = obj;
@@ -490,13 +492,17 @@ function EditarItens({ listaDeProdutos, setState, open }) {
 
         }
 
-        setState((prevState) => ({
-            ...prevState,
-            changes: {
-                ...prevState.changes,
-                listaDeProdutos: novaLista
-            }
-        }));
+        if (novaLista.length > 0) {
+            setState((prevState) => ({
+                ...prevState,
+                changes: {
+                    ...prevState.changes,
+                    listaDeProdutos: novaLista
+                }
+            }));
+        }
+
+
     };
 
     const alterarModo = (index, valor, comissao, id) => {
@@ -1116,7 +1122,7 @@ export default function EditarPedido({ navigation, route }) {
                 parcelaId: parcelaPadrao.id
             }));
 
-        } 
+        }
 
 
     }, [changes?.listaDeProdutos]);

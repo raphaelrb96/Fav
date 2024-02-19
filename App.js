@@ -149,6 +149,43 @@ function MiniMenu({ navigation }) {
   )
 };
 
+function MenuProdutos({ navigation }) {
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.container} >
+
+        <Avatar.Image style={styles.logo} size={110} source={require('./src/img/logo.png')} />
+
+
+        <View style={styles.row}>
+          <IconeMenu nav={navigation} name="Central de Produtos" screen="Produtos" icone="shopping" />
+          <IconeMenu nav={navigation} name="Gerenciador de Telas" screen="Telas e Feeds" icone="gesture-tap-box" />
+        </View>
+        <View style={styles.spacing} />
+      </View>
+    </ScrollView>
+
+  )
+};
+
+function MenuVendas({ navigation }) {
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.container} >
+
+        <Avatar.Image style={styles.logo} size={110} source={require('./src/img/logo.png')} />
+
+
+        <View style={styles.row}>
+          <IconeMenu nav={navigation} name="Pedidos e Vendas" screen="Vendas" icone="cash-register" />
+        </View>
+        <View style={styles.spacing} />
+      </View>
+    </ScrollView>
+
+  )
+};
+
 function MenuMain({ navigation }) {
 
 
@@ -209,7 +246,7 @@ let App = () => {
 
         <Stack.Screen
           name="Home"
-          //component={MiniMenu}
+          //component={MenuVendas}
           component={MenuMain}
           options={{
             headerShown: false

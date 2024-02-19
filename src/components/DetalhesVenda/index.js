@@ -247,8 +247,8 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
         };
 
         if (statusCompra === 3 || statusCompra === 5) {
-            Alert.alert("Acesso negado", "Venda concluida ou cancelada so vai poder ser editada pelo gerente");
-            return null;
+            //Alert.alert("Acesso negado", "Venda concluida ou cancelada so vai poder ser editada pelo gerente");
+            //return null;
         }
 
         finalizar();
@@ -365,14 +365,14 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
                 </Card.Actions>
 
                 <Card.Actions style={styles.buttons}>
-                    <Button uppercase onPress={() => editar()} theme={theme} style={styles.btnMensagem} icon={() => renderIcon("lock-outline")} mode="outlined" ><Text>Editar Informações</Text></Button>
+                    {
+                        <Button uppercase onPress={() => editar()} theme={theme} style={styles.btnMensagem} icon={() => renderIcon("lock-outline")} mode="outlined" ><Text>Editar Informações</Text></Button>
+
+                    }
 
                 </Card.Actions>
 
-                <Card.Actions style={styles.buttons}>
-                    <Button uppercase onPress={() => show()} theme={theme} style={styles.btnMensagem} mode="contained" ><Text>Abrir Whatsapp</Text></Button>
 
-                </Card.Actions>
             </View>
         );
     }
@@ -413,6 +413,14 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
                 <List.Item style={styles.dados} title={item.userNomeRevendedor} description={`${formartar(item.comissaoTotal)} de Comissão`} />
                 <List.Item style={styles.dados} title={getStatus(item.statusCompra)} description={'Status da venda'} />
 
+
+                <View style={styles.spacing} />
+                <Divider style={styles.divider} />
+                <View style={styles.spacing} />
+                <View style={styles.spacing} />
+
+                <Headline style={styles.subheader}>Detalhes do Cliente</Headline>
+
                 {
                     //item.statusCompra === 3 && item.idCancelamento
                     item.idCancelamento !== 0
@@ -421,6 +429,13 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
                         :
                         null
                 }
+
+                <Card.Actions style={styles.buttons}>
+                    <Button uppercase onPress={() => show()} theme={theme} style={styles.btnMensagem} mode="contained" ><Text>Abrir Whatsapp</Text></Button>
+
+                </Card.Actions>
+
+
 
             </List.Section>
 

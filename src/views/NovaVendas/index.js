@@ -373,7 +373,7 @@ export default function NovaVendas({ navigation }) {
     let titulo = '';
 
     if (itemDetalhe !== null) {
-        titulo = `${itemDetalhe.userNomeRevendedor} vendeu ${itemDetalhe.listaDeProdutos[0].quantidade} ${itemDetalhe.listaDeProdutos[0].produtoName.toLowerCase()} \nBairro ${itemDetalhe.complemento}`;
+        titulo = `${itemDetalhe.userNomeRevendedor} vendeu ${itemDetalhe.listaDeProdutos[0]?.quantidade} ${itemDetalhe.listaDeProdutos[0]?.produtoName.toLowerCase()} \nBairro ${itemDetalhe.complemento}`;
     }
 
     const DetalheFragment = ({ data }) => {
@@ -382,7 +382,7 @@ export default function NovaVendas({ navigation }) {
                 close={close}
                 show={() => {
                     //showDialog();
-                    navigation.navigate('Conversa', { num: itemDetalhe.phoneCliente, texto: getTextoWhats(), prod: itemDetalhe.listaDeProdutos[0].produtoName.toUpperCase(), nom: itemDetalhe.nomeCliente, pag: getFormaPagamento(itemDetalhe.formaDePagar) });
+                    navigation.navigate('Conversa', { num: itemDetalhe.phoneCliente, texto: getTextoWhats(), prod: itemDetalhe.listaDeProdutos[0]?.produtoName.toUpperCase(), nom: itemDetalhe.nomeCliente, pag: getFormaPagamento(itemDetalhe.formaDePagar) });
                 }}
                 cancel={() => {
                     close();

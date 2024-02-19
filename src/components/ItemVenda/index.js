@@ -319,7 +319,7 @@ export default function ItemVenda({ item, click }) {
 
     };
 
-    const detalheTxt = `${String(item.complemento).toUpperCase()} \n${item.listaDeProdutos[0].quantidade} ${item.listaDeProdutos[0].produtoName.toLowerCase()} \n`;
+    const detalheTxt = `${String(item.complemento).toUpperCase()} \n${item.listaDeProdutos[0]?.quantidade} ${item.listaDeProdutos[0]?.produtoName.toLowerCase()} \n`;
     const comissaoSucess = isValueSucessComissoes(comissaoTotal, listaDeProdutos);
 
     return (
