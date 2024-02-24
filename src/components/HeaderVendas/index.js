@@ -68,7 +68,7 @@ export default function HeaderVendas({prods, title, novas, atrasadas, maisAtrasa
         if (item === null || item === undefined) {
             return null;
         }
-        return <ItemProduto click={() => click(item)} path={item.caminhoImg} nome={`${item.quantidade} ${item.produtoName}`} />
+        return <ItemProduto path={item.caminhoImg} nome={`${item.quantidade} ${item.produtoName}`} />
     };
 
     const formatarNumero = n => {

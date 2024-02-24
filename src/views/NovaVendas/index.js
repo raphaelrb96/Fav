@@ -138,7 +138,7 @@ function getListaProdutos(prods, list) {
     }
 
     return listaDeProdutos;
-}
+};
 
 async function getRevendas(filtro, listener) {
 

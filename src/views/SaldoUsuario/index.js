@@ -1,13 +1,14 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { TextInput, DefaultTheme, Searchbar, Avatar, Headline, Caption, Text, List, Button } from 'react-native-paper';
 import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
 import Pb from '../../components/Pb';
 import firestore from '@react-native-firebase/firestore';
-import ItemUsuario from '../../components/ItemUsuario';
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        margin: 10,
         alignContent: 'center',
         alignItems: 'center',
     },
@@ -190,22 +191,16 @@ async function getVendasUser(uid, callback) {
 async function getUser(text, callback) {
     let usuario = firestore().collection('Usuario').where('userName', '==', text);
     await usuario.get().then(querySnapshot => {
-        let lista = [];
-        querySnapshot.forEach(doc => {
-            let objItem = doc.data();
-            lista.push(objItem);
-        });
-
-        return callback(lista);
+        let element = querySnapshot.docs[0].data();
+        return callback(element);
     }).catch(error => {
         return null;
     });
 }
 
-async function pesquisar(text, listener) {
+async function getResume(usuario, listener) {
 
-    let userOficial = null;
-    let userResult = null;
+    const userOficial = usuario;
 
     let vendasOficiais = null;
     let comissaoEmVendas = 0;
@@ -213,28 +208,20 @@ async function pesquisar(text, listener) {
     let aflOficiais = null;
     let comissoesAfiliados = 0;
 
-    await getUser(text, lista => {
-        userResult = lista;
+    await getVendasUser(userOficial.uid, (list, value) => {
+        vendasOficiais = list;
+        comissaoEmVendas = value;
+    });
+
+    await getVendasAfiliados(userOficial.uid, (list, value) => {
+        aflOficiais = list;
+        comissoesAfiliados = value;
     });
 
 
-    // await getVendasUser(userOficial.uid, (list, value) => {
-    //     vendasOficiais = list;
-    //     comissaoEmVendas = value;
-    // });
+    
 
-    // await getVendasAfiliados(userOficial.uid, (list, value) => {
-    //     aflOficiais = list;
-    //     comissoesAfiliados = value;
-    // });
-
-
-    // console.log(comissoesAfiliados);
-    // console.log('Total: ' + (comissoesAfiliados + comissaoEmVendas));
-
-    // return listener(userOficial, vendasOficiais, aflOficiais, comissaoEmVendas, comissoesAfiliados);
-
-    return listener(userResult);
+    return listener(vendasOficiais, aflOficiais, comissaoEmVendas, comissoesAfiliados);
 
 }
 
@@ -242,35 +229,42 @@ function formartar(v) {
     return `R$ ${v.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
 }
 
-export default function SearchVendedor({ navigation }) {
+export default function SaldoUsuario({ navigation, route }) {
+
+    const usuario = route.params.usuario;
 
     const [text, setText] = useState('');
-    const [pb, setPb] = useState(false);
-    const [state, setState] = useState(null);
+    const [pb, setPb] = useState(true);
+    const [state, setState] = useState({
+        user: usuario
+    });
     const [zerando, setZerando] = useState(false);
 
-    let click = (item) => {
-        navigation.navigate('Detalhes do Usuario', { usuario: item });
+    let click = () => {
+        if (zerando) {
+            return;
+        }
+
+        setZerando(true);
+
     };
 
-    let blur = () => {
+    const startScreen = () => {
         setPb(true);
-        pesquisar(text, (result) => {
-
-            // let { celular, pathFoto, nome, uid, userName, uidAdm, usernameAdm } = user;
+        getResume(usuario, (vendas, afls, cmsVenda, cmsAfl) => {
 
             setState((prevState) => ({
                 ...prevState,
-                usuarios: result
+                vendas: vendas,
+                afls: afls,
+                cmsVenda: cmsVenda,
+                cmsAfl: cmsAfl
             }));
-
             setPb(false);
-            setText('');
-
 
         });
 
-    }
+    };
 
     useEffect(() => {
 
@@ -288,21 +282,13 @@ export default function SearchVendedor({ navigation }) {
 
     }, [zerando]);
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            header: () => (
-                <Searchbar
-                    style={styles.toolbar}
-                    onIconPress={() => navigation.goBack()}
-                    icon="arrow-left"
-                    placeholder="Pesquisar por apelido"
-                    onChangeText={text => setText(text)}
-                    defaultValue={text}
-                    onBlur={blur}
-                />
-            )
-        });
-    }, [navigation, text]);
+    useEffect(() => {
+
+        startScreen();
+
+    }, []);
+
+    
 
     if (pb) {
         return <Pb />
@@ -310,10 +296,25 @@ export default function SearchVendedor({ navigation }) {
 
     if (state !== null) {
         return (
-            <FlatList
-                renderItem={({ item, index }) => <ItemUsuario dados={item} click={() => click(item)} />}
-                ListHeaderComponent={() => <View style={styles.spacing} />}
-                data={state.usuarios} />
+            <View style={styles.container}>
+                <View style={styles.center}>
+                    <Avatar.Image theme={thema} size={60} source={{ uri: state.user.pathFoto }} />
+                </View>
+
+                <Headline style={[styles.centerText, styles.bold]}>{state.user.nome}</Headline>
+                <Caption style={[styles.centerText, styles.bold]} >{`@${state.user.userName}`}</Caption>
+                <View style={styles.row}>
+                    <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsAfl)} description={`${state.afls.length} revendas`} />
+                    <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsVenda)} description={`${state.vendas.length} vendas`} />
+
+                </View>
+
+                <Headline style={[styles.centerText]}>{formartar((state.cmsVenda + state.cmsAfl))}</Headline>
+                <Text style={[styles.centerText]}>Total a receber</Text>
+                <Button style={styles.botaoSalvar} labelStyle={styles.label} loading={zerando} theme={thema} onPress={click} disabled={false} icon="cash-refund" mode="contained">
+                    <Text style={styles.textBtao}>Zerar Painel</Text>
+                </Button>
+            </View>
         );
     }
 

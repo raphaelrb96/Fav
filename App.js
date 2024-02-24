@@ -35,6 +35,8 @@ import ProdutoEditor from './src/views/ProdutoEditor';
 import { firebase } from '@react-native-firebase/auth';
 import EditarPedido from './src/views/EditarPedido';
 import DetalhesAgendamento from './src/views/DetalhesAgendamento';
+import DetalhesUsuario from './src/views/DetalhesUsuario';
+import SaldoUsuario from './src/views/SaldoUsuario';
 
 const Stack = createStackNavigator();
 
@@ -287,6 +289,11 @@ let App = () => {
         />
 
         <Stack.Screen
+          name="Saldo do Usuario"
+          component={SaldoUsuario}
+        />
+
+        <Stack.Screen
           name="Conversa"
           component={Conversa}
         />
@@ -304,6 +311,11 @@ let App = () => {
         <Stack.Screen
           name="Usuarios"
           component={UsuariosCentral}
+        />
+
+        <Stack.Screen
+          name="Detalhes do Usuario"
+          component={DetalhesUsuario}
         />
 
         <Stack.Screen

@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
 export default function Tamplate({ navigation }) {
 
     useLayoutEffect(() => {
+
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={handlePresentModalPress}>
@@ -33,10 +34,11 @@ export default function Tamplate({ navigation }) {
                 </TouchableOpacity>
             )
         });
+        
     }, []);
 
     const bottomSheetModalRef = useRef();
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(-1);
 
     const snapPoints = useMemo(() => ['80%'], []);
 
@@ -61,7 +63,7 @@ export default function Tamplate({ navigation }) {
                     snapPoints={snapPoints}
                     onChange={handleSheetChanges}>
                     <View style={styles.contentContainer}>
-                        <Text>Awesome 🎉</Text>
+                        <Text>Aberto 🎉</Text>
                     </View>
                 </BottomSheet>
             </View>

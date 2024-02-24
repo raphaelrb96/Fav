@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
 import { List, DefaultTheme, Avatar, Subheading, Card, Button, Divider, Caption } from 'react-native-paper';
-import { colorCinza } from '../../constantes/cores';
+import { colorCinza, colorCinzaClaro } from '../../constantes/cores';
 
 const theme = {
     ...DefaultTheme,
@@ -22,6 +22,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginBottom: 0
     },
+    content: {
+    },
     subheader: {
         marginLeft: -8,
         marginRight: 20
@@ -38,14 +40,15 @@ const styles = StyleSheet.create({
     iconeContainer: {
         height: '100%',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent: 'center',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        alignContent: 'flex-start',
         padding: 0,
         margin: 0,
+        marginLeft: 6
     },
     icone: {
-
+        marginTop: 4
     },
     bt: {
         fontSize: 30
@@ -58,25 +61,65 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     caption: {
-        marginLeft: 32,
+        marginLeft: 0,
         marginTop: 0,
-        fontSize: 16
+        marginBottom: 0,
+        fontSize: 14,
+        color: colorCinzaClaro
     },
     spacing: {
         height: 16
     },
     divider: {
+    }, 
+    mTop: {
+        marginTop: 12
     }
 });
 
 
 export default function ItemSolicitacaoAgendamento({ solicitacao, click }) {
 
-    const { bank, chave, id, titular, valorFinal, status, nome, foto, apelido, uid, timestampCreated } = solicitacao;
+    const { bank, chave, id, titular, valorFinal, status, nome, foto, apelido, uid, previsao, timestampCreated } = solicitacao;
+
+    function Right() {
+        return (
+            <View style={styles.iconeContainer}>
+                <List.Icon style={styles.icone} icon={previsao ? "check-decagram" : "check-decagram-outline"} />
+            </View>
+        );
+    };
+
+    function Description() {
+        return (
+            <>
+
+                <Text>
+                    {`${new Date(timestampCreated).toLocaleDateString()} às ${new Date(timestampCreated).toLocaleTimeString()}`}
+                </Text>
+
+                <Text style={[styles.caption, styles.mTop]}>
+                    {`Valor aproximado: R$${valorFinal.toFixed(0)}`}
+                </Text>
+
+                {
+                    previsao
+                        ?
+                        <Text style={styles.caption}>
+                            {`Agendado para o dia ${previsao}`}
+                        </Text>
+
+                        :
+                        null
+                }
+
+            </>
+        );
+    }
 
     return (
         <TouchableOpacity style={styles.container} onPress={click}>
-            <List.Section >
+            <List.Section style={styles.content}>
                 <List.Item
                     theme={theme}
                     style={styles.dados}
@@ -84,13 +127,9 @@ export default function ItemSolicitacaoAgendamento({ solicitacao, click }) {
                     titleNumberOfLines={2}
                     titleStyle={styles.title}
                     descriptionNumberOfLines={8}
-                    description={`${new Date(timestampCreated).toLocaleDateString()} às ${new Date(timestampCreated).toLocaleTimeString()}`}
-                    right={props => <View style={styles.iconeContainer} ><List.Icon style={styles.icone} icon="chevron-right" /></View>}
+                    description={() => <Description />}
+                    right={props => <Right />}
                 />
-
-                <Text style={styles.caption}>
-                    {`VALOR APROXIMADO: R$${valorFinal.toFixed(0)}`}
-                </Text>
 
 
 

@@ -437,7 +437,6 @@ function Content({ solicitacao, state, setState, navigation }) {
                         setLoad(true);
 
                         const novaData = dateToYMD(date);
-                        console.log(novaData)
 
                         definirPrevisao(uid, id, novaData, (sucess) => {
                             if(sucess) {
