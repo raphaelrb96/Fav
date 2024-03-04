@@ -425,7 +425,7 @@ export default function DetalhesUsuario({ navigation, route }) {
         return fetchData();
 
 
-    }, []);
+    }, [usuario]);
 
 
     return (

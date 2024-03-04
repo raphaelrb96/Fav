@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
     spacing: {
         marginTop: 0
     },
+    subhead: {
+        padding: 12,
+        paddingHorizontal: 16
+    }
 });
 
 const listarUsuarios = (userRecrutador, listener) => {
@@ -38,6 +42,8 @@ const listarUsuarios = (userRecrutador, listener) => {
     const refFinal = userRecrutador ? firestore().collection('Usuario').where('uidAdm', '==', userRecrutador?.uid).limit(400) : ref;
 
     const onNext = snap => {
+
+        console.log(snap)
 
         if (!snap) {
             listener(null);
@@ -138,7 +144,7 @@ export default function UsuariosCentral({ navigation, route }) {
         return fetchData();
 
 
-    }, []);
+    }, [usuario]);
 
     if (state.load) {
         return <Pb />
@@ -146,10 +152,10 @@ export default function UsuariosCentral({ navigation, route }) {
 
     function HeaderCentral() {
 
-        if(!usuario) return <View style={styles.spacing} />
+        if(!usuario || !state.usuarios) return <View style={styles.spacing} />
 
         return(
-            <Subheading style={styles.spacing}>
+            <Subheading style={styles.subhead}>
                 Afiliados de {usuario.nome}
             </Subheading>
         );

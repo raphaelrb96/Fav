@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { TextInput, DefaultTheme, Searchbar, Avatar, Headline, Caption, Text, List, Button } from 'react-native-paper';
 import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryLight } from '../../constantes/cores';
 import Pb from '../../components/Pb';
@@ -132,7 +132,7 @@ async function zerarPainel(list1, list2, uid, callback) {
         return callback(false);
     })
 
-}
+};
 
 async function getVendasAfiliados(uid, callback) {
     let afiliados = firestore().collection('MinhasComissoesAfiliados').doc('Usuario').collection(uid).where('pagamentoRecebido', '==', false);
@@ -160,7 +160,7 @@ async function getVendasAfiliados(uid, callback) {
     }).catch(error => {
         return null;
     });
-}
+};
 
 async function getVendasUser(uid, callback) {
     let vendas = firestore().collection('MinhasRevendas').doc('Usuario').collection(uid).where('pagamentoRecebido', '==', false);
@@ -186,7 +186,7 @@ async function getVendasUser(uid, callback) {
     }).catch(error => {
         return null;
     });
-}
+};
 
 async function getUser(text, callback) {
     let usuario = firestore().collection('Usuario').where('userName', '==', text);
@@ -196,7 +196,7 @@ async function getUser(text, callback) {
     }).catch(error => {
         return null;
     });
-}
+};
 
 async function getResume(usuario, listener) {
 
@@ -219,14 +219,38 @@ async function getResume(usuario, listener) {
     });
 
 
-    
+
 
     return listener(vendasOficiais, aflOficiais, comissaoEmVendas, comissoesAfiliados);
 
-}
+};
 
 function formartar(v) {
     return `R$ ${v.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
+};
+
+function HeaderSaldo({ state, zerando, click }) {
+    return (
+        <View style={styles.container}>
+            <View style={styles.center}>
+                <Avatar.Image theme={thema} size={60} source={{ uri: state.user.pathFoto }} />
+            </View>
+
+            <Headline style={[styles.centerText, styles.bold]}>{state.user.nome}</Headline>
+            <Caption style={[styles.centerText, styles.bold]} >{`@${state.user.userName}`}</Caption>
+            <View style={styles.row}>
+                <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsAfl)} description={`${state.afls.length} revendas`} />
+                <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsVenda)} description={`${state.vendas.length} vendas`} />
+
+            </View>
+
+            <Headline style={[styles.centerText]}>{formartar((state.cmsVenda + state.cmsAfl))}</Headline>
+            <Text style={[styles.centerText]}>Total a receber</Text>
+            <Button style={styles.botaoSalvar} labelStyle={styles.label} loading={zerando} theme={thema} onPress={click} disabled={false} icon="cash-refund" mode="contained">
+                <Text style={styles.textBtao}>Zerar Painel</Text>
+            </Button>
+        </View>
+    );
 }
 
 export default function SaldoUsuario({ navigation, route }) {
@@ -288,7 +312,6 @@ export default function SaldoUsuario({ navigation, route }) {
 
     }, []);
 
-    
 
     if (pb) {
         return <Pb />
@@ -296,27 +319,11 @@ export default function SaldoUsuario({ navigation, route }) {
 
     if (state !== null) {
         return (
-            <View style={styles.container}>
-                <View style={styles.center}>
-                    <Avatar.Image theme={thema} size={60} source={{ uri: state.user.pathFoto }} />
-                </View>
-
-                <Headline style={[styles.centerText, styles.bold]}>{state.user.nome}</Headline>
-                <Caption style={[styles.centerText, styles.bold]} >{`@${state.user.userName}`}</Caption>
-                <View style={styles.row}>
-                    <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsAfl)} description={`${state.afls.length} revendas`} />
-                    <List.Item style={[styles.itemDados, styles.centerText,]} title={formartar(state.cmsVenda)} description={`${state.vendas.length} vendas`} />
-
-                </View>
-
-                <Headline style={[styles.centerText]}>{formartar((state.cmsVenda + state.cmsAfl))}</Headline>
-                <Text style={[styles.centerText]}>Total a receber</Text>
-                <Button style={styles.botaoSalvar} labelStyle={styles.label} loading={zerando} theme={thema} onPress={click} disabled={false} icon="cash-refund" mode="contained">
-                    <Text style={styles.textBtao}>Zerar Painel</Text>
-                </Button>
-            </View>
+            <FlatList
+                ListHeaderComponent={() => <HeaderSaldo state={state} click={click} zerando={zerando} />}
+            />
         );
     }
 
     return null;
-}
+};
