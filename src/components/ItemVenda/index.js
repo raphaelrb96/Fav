@@ -251,8 +251,6 @@ function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente
         textCancelamento = `\n\n"${getMotivoCancelamento(idCancelamento)}"`;
     }
 
-    console.log(valor)
-
     return (
         <>
             <Text style={styles.txtCliente}>

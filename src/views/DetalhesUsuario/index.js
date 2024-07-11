@@ -118,6 +118,27 @@ function renderIcon(source) {
     )
 }
 
+const atualizarDocUsuario = (usuario, listener) => {
+    const uidFinal = usuario.uid;
+    const userNameAdmFinal = usuario.userName;
+    const nomeAdmFinal = usuario.nome;
+    const fotoAdmFinal = usuario.pathFoto;
+    const ref = firestore().collection('Usuario').doc(uidFinal);
+    const objFinal = {
+        admConfirmado: true,
+        vipDiamante: true,
+        nomeAdm: nomeAdmFinal,
+        pathFotoAdm: fotoAdmFinal,
+        uidAdm: uidFinal,
+        usernameAdm: userNameAdmFinal
+    };
+    ref.update(objFinal).then(() => {
+        listener(true);
+    }).catch(e => {
+        listener(false);
+    });
+};
+
 const getListaProdutos = (prods, list) => {
 
     let listaDeProdutos = list;
@@ -205,13 +226,29 @@ const listarVendas = (uid, listener) => {
 
 };
 
-function Header({ prods, state, usuario, navigation }) {
+function Header({ prods, state, setState, usuario, navigation }) {
 
     const render = ({ item }) => {
         if (item === null || item === undefined) {
             return null;
         }
         return <ItemProduto path={item.caminhoImg} nome={`${item.quantidade} ${item.produtoName}`} />
+    };
+
+    const upgradeDiamante = () => {
+
+        setState((prevState) => ({
+            ...prevState,
+            load: true,
+        }));
+
+        atualizarDocUsuario(usuario, (sucess) => {
+            // setState((prevState) => ({
+            //     ...prevState,
+            //     load: false,
+            // }));
+            navigation.goBack();
+        });
     };
 
     const dataCadastro = `${new Date(usuario.primeiroLogin).toLocaleDateString()} às ${new Date(usuario.primeiroLogin).toLocaleTimeString()}`;
@@ -257,19 +294,25 @@ function Header({ prods, state, usuario, navigation }) {
 
             </Card>
 
+
             <Card.Actions style={styles.buttons}>
                 <Button mode="elevated" uppercase theme={theme} style={styles.botao} onPress={() => navigation.navigate('Saldo do Usuario', { usuario })} labelStyle={styles.bt}>
                     Saldo Total
                 </Button>
             </Card.Actions>
             <Card.Actions style={styles.buttons}>
-                <Button mode="elevated" uppercase theme={theme} style={styles.botao} onPress={() => {}} labelStyle={styles.bt}>
+                <Button mode="elevated" uppercase theme={theme} style={styles.botao} onPress={() => { }} labelStyle={styles.bt}>
                     Historico Saques
                 </Button>
             </Card.Actions>
             <Card.Actions style={styles.buttons}>
                 <Button mode="elevated" uppercase theme={theme} style={[styles.botao]} onPress={() => navigation.navigate('Usuarios', { usuario })} labelStyle={styles.bt}>
                     Afiliados
+                </Button>
+            </Card.Actions>
+            <Card.Actions style={styles.buttons}>
+                <Button mode="elevated" uppercase theme={theme} style={styles.botao} onLongPress={upgradeDiamante} onPress={() => { }} labelStyle={styles.bt}>
+                    Upgrade Diamante
                 </Button>
             </Card.Actions>
 
@@ -332,7 +375,7 @@ function Content({ state, setState, navigation, expand, usuario }) {
         <FlatList
             style={styles.list}
             data={historico}
-            ListHeaderComponent={() => <Header prods={state.produtos} usuario={usuario} state={state} navigation={navigation} />}
+            ListHeaderComponent={() => <Header prods={state.produtos} usuario={usuario} state={state} setState={setState} navigation={navigation} />}
             renderItem={({ item }) => <ItemVenda item={item} click={() => detalhes(item)} />}
         />
     );
@@ -405,7 +448,6 @@ export default function DetalhesUsuario({ navigation, route }) {
         setState((prevState) => ({
             ...prevState,
             load: true,
-
         }));
 
         const fetchData = () => {
