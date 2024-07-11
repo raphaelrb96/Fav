@@ -165,7 +165,7 @@ const getListaProdutos = (prods, list) => {
 const listarVendas = (uid, listener) => {
 
 
-    const ref = firestore().collection('MinhasRevendas').doc('Usuario').collection(uid).limit(400);
+    const ref = firestore().collection('MinhasRevendas').doc('Usuario').collection(uid).orderBy("hora", "desc").limit(400);
 
     const onNext = snap => {
 

@@ -257,10 +257,12 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
 
     function Actions() {
 
+        //ATUALIZAR ACESS ABERTO = FALSE
+        //QUANDO A VERSAO FOR DIFERENTE DO ADMIN
         const [acess, setAcess] = useState({
             login: '',
             senha: '',
-            aberto: false
+            aberto: true
         });
 
         const setData = () => {

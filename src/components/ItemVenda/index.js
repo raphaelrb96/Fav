@@ -224,7 +224,7 @@ function ItemProdutoVenda({ q, nome, path }) {
     );
 };
 
-function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente }) {
+function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente, valor }) {
 
     if (status !== 3) {
         return (
@@ -232,10 +232,15 @@ function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente
                 <Text style={styles.txtCliente}>
                     {`${String(cliente).toLocaleUpperCase()}`}
                 </Text>
-                <Text style={styles.txt}>
 
+                <Text style={styles.txt}>
                     {`\n${detalhe}`}
                 </Text>
+
+                <Text style={styles.txtCliente}>
+                    {`\nR$${valor},00`}
+                </Text>
+                
             </>
         )
     }
@@ -246,11 +251,18 @@ function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente
         textCancelamento = `\n\n"${getMotivoCancelamento(idCancelamento)}"`;
     }
 
+    console.log(valor)
+
     return (
         <>
             <Text style={styles.txtCliente}>
                 {`${cliente}`}
             </Text>
+
+            <Text style={styles.txtCliente}>
+                {`\nR$${valor},00`}
+            </Text>
+
             <Text style={styles.txt}>
                 {`\n${detalhe}`}
             </Text>
@@ -312,8 +324,8 @@ export default function ItemVenda({ item, click }) {
 
         atualizarComissao(item, (sucess) => {
             setLoad(false);
-            if(!sucess) {
-                
+            if (!sucess) {
+
             }
         });
 
@@ -336,7 +348,7 @@ export default function ItemVenda({ item, click }) {
                     expanded={false}
                     descriptionStyle={styles.itemDescricao}
                     descriptionNumberOfLines={17}
-                    description={<Content status={item.statusCompra} cliente={item.nomeCliente} detalhe={detalheTxt} idCancelamento={item.idCancelamento} detalheCancelamento={item.detalheCancelamento} />}
+                    description={<Content status={item.statusCompra} cliente={item.nomeCliente} detalhe={detalheTxt} valor={item.valorTotal} idCancelamento={item.idCancelamento} detalheCancelamento={item.detalheCancelamento} />}
                     right={props => <View style={styles.iconeContainer} ><List.Icon style={styles.icone} icon="chevron-right" /></View>}
                     left={props => <View style={styles.iconeContainer} ><List.Icon style={styles.icone} icon={getIcone()} /></View>}>
 
@@ -371,9 +383,9 @@ export default function ItemVenda({ item, click }) {
 
             </TouchableWithoutFeedback>
 
-            <AlertaGrave 
-                show={!comissaoSucess} 
-                click={corrigirComissao} 
+            <AlertaGrave
+                show={!comissaoSucess}
+                click={corrigirComissao}
                 setLoad={setLoad}
                 load={load} />
 
