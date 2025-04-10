@@ -5,6 +5,7 @@ import { List, Card, Portal, Provider, DefaultTheme, Button, Headline, Divider, 
 import { colorCinza, colorPrimary, colorPrimaryDark, colorSecondaryDark, colorSecondaryLight } from '../../constantes/cores';
 import ItemProdutoVenda from "../ItemProdutoVenda";
 import firestore from '@react-native-firebase/firestore';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const styles = StyleSheet.create({
     container: {
@@ -236,6 +237,11 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
 
     let atualizar = (state) => {
 
+        if (statusCompra === 3 || statusCompra === 5) {
+            Alert.alert("Acesso negado", "Venda concluida ou cancelada so pode ser editada pelo gerente");
+            return null;
+        }
+
         const finalizar = () => {
             close();
             updateVenda(state, item, (sucess) => {
@@ -246,13 +252,14 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
             });
         };
 
-        if (statusCompra === 3 || statusCompra === 5) {
-            //Alert.alert("Acesso negado", "Venda concluida ou cancelada so vai poder ser editada pelo gerente");
-            //return null;
-        }
 
         finalizar();
 
+    };
+
+    const copiarInformacoes = () => {
+        let stringClipCopy = String(`⏱️ ${new Date(item.hora).toLocaleString()} \n📱 ${phoneCliente} \n👨🏻‍💼 ${nomeCliente} \n🏠 ${complemento} \n💰 TOTAL: ${formartar(item.valorTotal)} \n${item.listaDeProdutos.map(obj => `📦 ${obj.quantidade} - ${obj.produtoName.toUpperCase()}\n`)}`).toLocaleUpperCase();
+        Clipboard.setString(stringClipCopy);
     };
 
     function Actions() {
@@ -403,6 +410,10 @@ export default function Detalhes({ item, close, show, cancel, editar }) {
                 {(parcelaFinal && (pagamentoFinal.id === 3 || pagamentoFinal.id === 2)) ? <List.Item style={styles.dados} title={parcelaFinal.descricao} description={parcelaFinal.valorString} /> : null}
                 {entregaFinal ? <List.Item style={styles.dados} title={entregaFinal.valorString} description={'Taxa de ' + entregaFinal.titulo} /> : null}
                 {garantiaFinal ? <List.Item style={styles.dados} title={garantiaFinal.titulo + ': ' + garantiaFinal.valorString} descriptionNumberOfLines={4} description={garantiaFinal.descricao} /> : null}
+
+                <Card.Actions style={styles.buttons}>
+                    <Button uppercase onPress={() => copiarInformacoes()} theme={theme} style={styles.btnMensagem} mode="outlined" ><Text>Copiar Informações</Text></Button>
+                </Card.Actions>
 
                 <View style={styles.spacing} />
                 <Divider style={styles.divider} />

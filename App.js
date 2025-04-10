@@ -250,9 +250,9 @@ let App = () => {
           name="Home"
           //ALTERAR LINHA 265 'setAcess' (DetalhesVenda)
           //QUANDO A VERSAO FOR DIFERENTE DE ADMIN
-          //component={MenuVendas}
+          component={MenuVendas}
           //component={MenuProdutos}
-          component={MenuMain}
+          //component={MenuMain}
           options={{
             headerShown: false
           }}

@@ -238,7 +238,7 @@ function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente
                 </Text>
 
                 <Text style={styles.txtCliente}>
-                    {`\nR$${valor},00`}
+                    {`\nR$ ${valor},00`}
                 </Text>
                 
             </>
@@ -258,7 +258,7 @@ function Content({ detalhe, idCancelamento, detalheCancelamento, status, cliente
             </Text>
 
             <Text style={styles.txtCliente}>
-                {`\nR$${valor},00`}
+                {`\nR$ ${valor},00`}
             </Text>
 
             <Text style={styles.txt}>
